@@ -254,4 +254,4 @@ function handleCreateEvent(e) {
             if (form) form.reset();
         });
     });
-} 
+}  

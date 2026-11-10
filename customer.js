@@ -14,7 +14,6 @@ try {
     console.warn("Firebase warning.", e);
 }
 
-// --- 2. URL PARSER & STATE ---
 const urlParams = new URLSearchParams(window.location.search);
 let currentEventId = urlParams.get('event') || 'walimah-haziq';
 let memoryFeed = [];
@@ -32,26 +31,27 @@ document.addEventListener('DOMContentLoaded', () => {
     initGuestView();
 });
 
-// --- 3. GUEST VIEW & FIREBASE SYNC ---
 function initGuestView() {
     if (!eventsRef) return;
 
-    // Cari bahagian ini di dalam initGuestView() di customer.js dan kemaskini:
     eventsRef.child(currentEventId).child('config').on('value', (snapshot) => {
         const cfg = snapshot.val();
         if (cfg) {
             applyDynamicTheme(cfg);
-            document.getElementById('disp-wedding-title').innerText = cfg.title || "LenteraKita";
-            document.getElementById('disp-groom-bride').innerText = cfg.eventTitle || "Majlis Kenangan";
-            document.getElementById('disp-wedding-date').innerText = `${cfg.date || ''} • ${cfg.venue || ''}`;
-            document.getElementById('disp-welcome-msg').innerText = cfg.welcomeMsg || "Selamat datang!";
+            const titleEl = document.getElementById('disp-wedding-title');
+            const groomEl = document.getElementById('disp-groom-bride');
+            const dateEl = document.getElementById('disp-wedding-date');
+            const welcomeEl = document.getElementById('disp-welcome-msg');
 
-            // Set Background Kotak Welcome & Background Blur Keseluruhan
+            if (titleEl) titleEl.innerText = cfg.title || "LenteraKita";
+            if (groomEl) groomEl.innerText = cfg.eventTitle || "Wedding Event";
+            if (dateEl) dateEl.innerText = `${cfg.date || ''} • ${cfg.venue || ''}`;
+            if (welcomeEl) welcomeEl.innerText = cfg.welcomeMsg || "Welcome to our celebration!";
+
             const welcomeCard = document.getElementById('welcomeCardContainer');
             const bgElement = document.getElementById('dynamicBg');
-            
-            let bgSource = cfg.customBg; // Gambar pilihan admin
-            
+            let bgSource = cfg.customBg;
+
             if (!bgSource && memoryFeed.length > 0) {
                 const latestPhoto = memoryFeed.find(item => item.media && item.media.length > 0);
                 if (latestPhoto) bgSource = latestPhoto.media[0];
@@ -60,6 +60,12 @@ function initGuestView() {
             if (bgSource) {
                 if (welcomeCard) welcomeCard.style.backgroundImage = `url('${bgSource}')`;
                 if (bgElement) bgElement.style.backgroundImage = `url('${bgSource}')`;
+            }
+
+            const bgAudio = document.getElementById('bgAudio');
+            if (bgAudio && cfg.audioUrl && !bgAudio.src) {
+                bgAudio.src = cfg.audioUrl;
+                bgAudio.play().catch(() => console.log("Auto-play blocked."));
             }
         }
     });
@@ -86,10 +92,14 @@ function applyDynamicTheme(cfg) {
 
 function updateDynamicBackground() {
     const bgElement = document.getElementById('dynamicBg');
+    const welcomeCard = document.getElementById('welcomeCardContainer');
     if (!bgElement) return;
     const latestPhoto = memoryFeed.find(item => item.media && item.media.length > 0);
     if (latestPhoto && latestPhoto.media[0]) {
         bgElement.style.backgroundImage = `url('${latestPhoto.media[0]}')`;
+        if (welcomeCard && !welcomeCard.style.backgroundImage) {
+            welcomeCard.style.backgroundImage = `url('${latestPhoto.media[0]}')`;
+        }
     }
 }
 
@@ -101,20 +111,24 @@ function toggleSidebar() {
     overlay.classList.toggle('hidden');
 }
 
-function switchTab(tab) {
-    const formTab = document.getElementById('tab-form');
-    const feedTab = document.getElementById('tab-feed');
-    if (!formTab || !feedTab) return;
-
-    if (tab === 'form') {
-        formTab.classList.remove('hidden');
-        feedTab.classList.add('hidden');
-    } else if (tab === 'feed') {
-        formTab.classList.add('hidden');
-        feedTab.classList.remove('hidden');
-    } else if (tab === 'tv') {
+function switchTab(tabName) {
+    if (tabName === 'tv') {
         openTvMode();
+        return;
     }
+    ['feed', 'explore', 'form'].forEach(t => {
+        const el = document.getElementById(`tab-${t}`);
+        const nav = document.getElementById(`nav-${t}`);
+        if (el) el.classList.add('hidden');
+        if (nav) nav.classList.remove('active');
+    });
+
+    const targetTab = document.getElementById(`tab-${tabName}`);
+    const targetNav = document.getElementById(`nav-${tabName}`);
+    if (targetTab) targetTab.classList.remove('hidden');
+    if (targetNav) targetNav.classList.add('active');
+
+    if (tabName === 'explore') renderExploreGrid();
 }
 
 function addWishTag(tagText) {
@@ -175,7 +189,7 @@ async function toggleRecording() {
         mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
         mediaRecorder.onstart = () => {
             if (recordBtn) recordBtn.classList.replace('bg-red-600', 'bg-amber-500');
-            if (statusText) statusText.innerText = "Merekam...";
+            if (statusText) statusText.innerText = "Recording...";
             if (timerText) timerText.classList.remove('hidden');
             recordSeconds = 0;
             recordTimerInterval = setInterval(() => {
@@ -186,7 +200,7 @@ async function toggleRecording() {
         mediaRecorder.onstop = () => {
             clearInterval(recordTimerInterval);
             if (recordBtn) recordBtn.classList.replace('bg-amber-500', 'bg-red-600');
-            if (statusText) statusText.innerText = "Selesai!";
+            if (statusText) statusText.innerText = "Done!";
             const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -200,7 +214,7 @@ async function toggleRecording() {
             stream.getTracks().forEach(t => t.stop());
         };
         mediaRecorder.start();
-    } catch (err) { alert("Mikrofon ditolak."); }
+    } catch (err) { alert("Microphone access denied."); }
 }
 
 function clearAudioRecording() {
@@ -209,7 +223,7 @@ function clearAudioRecording() {
     const statusText = document.getElementById('recordStatus');
     const timerText = document.getElementById('recordTimer');
     if (audioContainer) audioContainer.classList.add('hidden');
-    if (statusText) statusText.innerText = "Tekan mikrofon untuk mula rakam";
+    if (statusText) statusText.innerText = "Press mic to record";
     if (timerText) timerText.classList.add('hidden');
 }
 
@@ -223,18 +237,20 @@ function handleFormSubmit(e) {
     const name = nameInput.value.trim();
     const table = tableInput ? tableInput.value.trim() : '';
     const wish = wishInput ? wishInput.value.trim() : '';
-    if (!name) return alert("Sila masukkan nama!");
+    if (!name) return alert("Please enter your name!");
 
     const submitBtn = document.getElementById('submitBtn');
     if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-2"></i> Menghantar...`;
+        submitBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-2"></i> Submitting...`;
     }
 
     const newMemory = {
-        name, table: table || 'Tetamu', wish: wish || '',
+        name, table: table || 'Guest', wish: wish || '',
         media: selectedMediaFiles.length > 0 ? selectedMediaFiles : null,
         audio: recordedAudioBase64 || null,
+        likes: 0,
+        comments: [],
         timestamp: Date.now(),
         dateStr: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
@@ -253,46 +269,162 @@ function resetForm() {
     const submitBtn = document.getElementById('submitBtn');
     if (submitBtn) {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane mr-2"></i> Hantar Kenangan`;
+        submitBtn.innerHTML = `Submit Memory`;
     }
 }
 
+// --- INSTAGRAM FEED DENGAN SLIDER (NEXT/PREV) ---
 function renderFeed() {
-    const feedGrid = document.getElementById('feedGrid');
-    if (!feedGrid) return;
+    const feedContainer = document.getElementById('igFeedContainer');
+    const storiesBar = document.getElementById('storiesHighlightsBar');
+    if (!feedContainer) return;
 
-    let filtered = memoryFeed.filter(item => {
-        if (currentFilter === 'photo') return item.media !== null;
-        if (currentFilter === 'voice') return item.audio !== null;
-        return true;
-    });
-
-    if (filtered.length === 0) {
-        feedGrid.innerHTML = `<div class="col-span-3 py-10 text-center text-slate-400 text-xs">Belum ada kenangan.</div>`;
+    if (memoryFeed.length === 0) {
+        feedContainer.innerHTML = `<div class="py-12 text-center text-slate-400 text-xs">No memories yet. Be the first to share!</div>`;
+        if (storiesBar) storiesBar.innerHTML = `<p class="text-[10px] text-slate-400 px-2">No stories yet</p>`;
         return;
     }
 
-    let tilesHtml = [];
-    filtered.forEach(item => {
-        if (item.media && Array.isArray(item.media)) {
-            item.media.forEach(imgUrl => {
-                tilesHtml.push(`
-                    <div class="memory-tile" onclick="openDetailModal('${item.id}')">
-                        <img src="${imgUrl}" alt="Memory">
-                        ${item.audio ? `<div class="absolute bottom-1 left-1 bg-black/60 px-1.5 py-0.5 rounded text-[9px] text-amber-300"><i class="fa-solid fa-microphone"></i></div>` : ''}
+    if (storiesBar) {
+        storiesBar.innerHTML = memoryFeed.map(item => {
+            const thumb = (item.media && item.media.length > 0) ? item.media[0] : 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=200';
+            return `
+                <div class="flex flex-col items-center space-x-1 cursor-pointer flex-shrink-0" onclick="openDetailModal('${item.id}')">
+                    <div class="story-ring">
+                        <div class="story-inner"><img src="${thumb}" alt="Story"></div>
                     </div>
-                `);
-            });
-        } else if (item.audio) {
-            tilesHtml.push(`
-                <div class="memory-tile flex flex-col items-center justify-center bg-slate-900 p-2 text-center" onclick="openDetailModal('${item.id}')">
-                    <i class="fa-solid fa-microphone-lines text-amber-400 text-xl mb-1"></i>
-                    <span class="text-[10px] text-amber-200 truncate w-full">${escapeHtml(item.name)}</span>
+                    <span class="text-[10px] text-slate-300 truncate w-16 text-center mt-1">${escapeHtml(item.name)}</span>
                 </div>
-            `);
+            `;
+        }).join('');
+    }
+
+    feedContainer.innerHTML = memoryFeed.map(item => {
+        let mediaSliderHtml = '';
+        if (item.media && Array.isArray(item.media)) {
+            const slides = item.media.map((url, idx) => `
+                <div class="slide-item w-full h-full flex-shrink-0 relative flex items-center justify-center bg-black">
+                    <img src="${url}" class="w-full h-full object-contain max-h-[450px]">
+                    <span class="absolute top-2 right-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full">${idx + 1}/${item.media.length}</span>
+                </div>
+            `).join('');
+
+            mediaSliderHtml = `
+                <div class="relative w-full bg-slate-950 overflow-hidden border-y border-white/10 group">
+                    <div id="slider-${item.id}" class="flex transition-transform duration-300 ease-in-out w-full" style="transform: translateX(0%);">
+                        ${slides}
+                    </div>
+                    ${item.media.length > 1 ? `
+                        <button onclick="slideMedia('${item.id}', -1, ${item.media.length})" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs"><i class="fa-solid fa-chevron-left"></i></button>
+                        <button onclick="slideMedia('${item.id}', 1, ${item.media.length})" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs"><i class="fa-solid fa-chevron-right"></i></button>
+                    ` : ''}
+                </div>
+            `;
         }
+
+        const commentsList = item.comments ? Object.values(item.comments).map(c => `<p class="text-[11px] text-slate-300"><strong class="text-amber-300">${escapeHtml(c.name)}:</strong> ${escapeHtml(c.text)}</p>`).join('') : '';
+
+        return `
+            <div class="bg-slate-900/85 backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden shadow-lg space-y-2 pb-3">
+                <div class="flex items-center justify-between p-3 pb-0">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 rounded-full bg-amber-500/25 border border-amber-500/40 flex items-center justify-center text-amber-300 font-bold text-xs">
+                            ${escapeHtml(item.name.charAt(0).toUpperCase())}
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-amber-200">${escapeHtml(item.name)}</p>
+                            <p class="text-[10px] text-slate-400">Table: ${escapeHtml(item.table)} • ${item.dateStr || ''}</p>
+                        </div>
+                    </div>
+                    ${item.media && item.media[0] ? `<a href="${item.media[0]}" download="lenterakita-memory.jpg" target="_blank" class="text-xs text-amber-300 bg-amber-500/20 px-2.5 py-1 rounded-lg border border-amber-500/30 hover:bg-amber-500/30" title="Download Image"><i class="fa-solid fa-download mr-1"></i> Save</a>` : ''}
+                </div>
+
+                ${mediaSliderHtml}
+
+                <div class="flex justify-between items-center px-4 py-1 text-lg text-slate-200">
+                    <div class="flex space-x-4 items-center">
+                        <button onclick="toggleLike('${item.id}')" class="transition text-slate-300 hover:text-rose-500"><i class="fa-regular fa-heart text-xl" id="like-icon-${item.id}"></i></button>
+                        <span class="text-xs text-slate-300 font-mono" id="like-count-${item.id}">${item.likes || 0}</span>
+                        <button onclick="openDetailModal('${item.id}')" class="transition text-slate-300 hover:text-amber-300"><i class="fa-regular fa-comment text-xl"></i></button>
+                    </div>
+                </div>
+
+                ${item.wish ? `<div class="px-4 text-xs"><p class="text-slate-200"><strong class="text-amber-300 mr-1">${escapeHtml(item.name)}</strong> ${escapeHtml(item.wish)}</p></div>` : ''}
+
+                ${item.audio ? `
+                    <div class="px-4">
+                        <div class="bg-slate-950 p-2 rounded-xl border border-amber-500/30 flex items-center space-x-2">
+                            <i class="fa-solid fa-microphone text-amber-400"></i>
+                            <audio controls src="${item.audio}" class="w-full h-7"></audio>
+                        </div>
+                    </div>
+                ` : ''}
+
+                <!-- Ruangan Komen Ringkas -->
+                <div class="px-4 pt-1 space-y-1">
+                    <div id="comments-box-${item.id}" class="space-y-1 max-h-24 overflow-y-auto">${commentsList}</div>
+                    <div class="flex space-x-2 pt-1">
+                        <input type="text" id="comment-input-${item.id}" placeholder="Add a comment..." class="flex-grow bg-slate-950 border border-white/10 rounded-lg px-2.5 py-1 text-[11px] text-white outline-none focus:border-amber-400">
+                        <button onclick="postComment('${item.id}')" class="px-3 py-1 bg-amber-500 text-slate-950 text-[11px] font-bold rounded-lg hover:bg-amber-400">Post</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    renderExploreGrid();
+}
+
+// Slider Navigator
+let sliderIndexes = {};
+function slideMedia(itemId, direction, totalSlides) {
+    if (!sliderIndexes[itemId]) sliderIndexes[itemId] = 0;
+    sliderIndexes[itemId] += direction;
+    if (sliderIndexes[itemId] < 0) sliderIndexes[itemId] = totalSlides - 1;
+    if (sliderIndexes[itemId] >= totalSlides) sliderIndexes[itemId] = 0;
+
+    const slider = document.getElementById(`slider-${itemId}`);
+    if (slider) {
+        slider.style.transform = `translateX(-${sliderIndexes[itemId] * 100}%)`;
+    }
+}
+
+// Fungsi Like
+function toggleLike(itemId) {
+    const icon = document.getElementById(`like-icon-${itemId}`);
+    const countEl = document.getElementById(`like-count-${itemId}`);
+    if (!icon || !countEl) return;
+
+    const memoryRef = eventsRef.child(currentEventId).child('memories').child(itemId);
+    memoryRef.once('value', snapshot => {
+        const data = snapshot.val();
+        let currentLikes = data.likes || 0;
+        if (icon.classList.contains('fa-regular')) {
+            icon.classList.replace('fa-regular', 'fa-solid');
+            icon.classList.add('text-rose-500');
+            currentLikes += 1;
+        } else {
+            icon.classList.replace('fa-solid', 'fa-regular');
+            icon.classList.remove('text-rose-500');
+            currentLikes = Math.max(0, currentLikes - 1);
+        }
+        memoryRef.update({ likes: currentLikes });
+        countEl.innerText = currentLikes;
     });
-    feedGrid.innerHTML = tilesHtml.join('');
+}
+
+// Fungsi Komen
+function postComment(itemId) {
+    const input = document.getElementById(`comment-input-${itemId}`);
+    if (!input || !input.value.trim()) return;
+
+    const commentText = input.value.trim();
+    const commenterName = prompt("Enter your name for the comment:", "Guest") || "Guest";
+
+    const newComment = { name: commenterName, text: commentText, timestamp: Date.now() };
+    eventsRef.child(currentEventId).child('memories').child(itemId).child('comments').push(newComment).then(() => {
+        input.value = '';
+    });
 }
 
 function filterFeed(type) {
@@ -300,9 +432,32 @@ function filterFeed(type) {
     ['all', 'photo', 'voice'].forEach(t => {
         const btn = document.getElementById(`filter-${t}`);
         if (!btn) return;
-        btn.className = (t === type) ? "px-3 py-1 rounded-lg font-medium bg-amber-500 text-slate-950 text-xs" : "px-3 py-1 rounded-lg font-medium text-slate-300 hover:text-white text-xs";
+        btn.className = (t === type) ? "px-2.5 py-1 rounded-lg font-medium bg-amber-500 text-slate-950 text-xs" : "px-2.5 py-1 rounded-lg font-medium text-slate-300 text-xs";
     });
-    renderFeed();
+    renderExploreGrid();
+}
+
+function renderExploreGrid() {
+    const feedGrid = document.getElementById('feedGrid');
+    if (!feedGrid) return;
+    let filtered = memoryFeed.filter(item => {
+        if (currentFilter === 'photo') return item.media !== null;
+        if (currentFilter === 'voice') return item.audio !== null;
+        return true;
+    });
+    let tilesHtml = [];
+    filtered.forEach(item => {
+        if (item.media && Array.isArray(item.media)) {
+            item.media.forEach(imgUrl => {
+                tilesHtml.push(`
+                    <div class="memory-tile aspect-square relative overflow-hidden cursor-pointer" onclick="openDetailModal('${item.id}')">
+                        <img src="${imgUrl}" class="w-full h-full object-cover">
+                    </div>
+                `);
+            });
+        }
+    });
+    feedGrid.innerHTML = tilesHtml.length > 0 ? tilesHtml.join('') : `<div class="col-span-3 py-10 text-center text-slate-400 text-xs">No media found.</div>`;
 }
 
 function openDetailModal(itemId) {
@@ -321,12 +476,12 @@ function openDetailModal(itemId) {
                 <div class="w-10 h-10 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300 font-bold">${escapeHtml(item.name.charAt(0).toUpperCase())}</div>
                 <div>
                     <h4 class="font-serif font-bold text-amber-200 text-sm">${escapeHtml(item.name)}</h4>
-                    <span class="text-[10px] text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">Meja: ${escapeHtml(item.table)} • ${item.dateStr || ''}</span>
+                    <span class="text-[10px] text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/25">Table: ${escapeHtml(item.table)} • ${item.dateStr || ''}</span>
                 </div>
             </div>
             ${mediaHtml}
             ${item.wish ? `<div class="bg-slate-900/60 p-3 rounded-xl border border-white/10"><p class="text-xs text-slate-200 italic">"${escapeHtml(item.wish)}"</p></div>` : ''}
-            ${item.audio ? `<div class="bg-slate-900/90 p-3 rounded-xl border border-amber-500/30 space-y-1"><p class="text-[10px] text-amber-300"><i class="fa-solid fa-microphone mr-1"></i> Ucapan Suara:</p><audio controls src="${item.audio}" class="w-full h-8"></audio></div>` : ''}
+            ${item.audio ? `<div class="bg-slate-900/90 p-3 rounded-xl border border-amber-500/30 space-y-1"><p class="text-[10px] text-amber-300"><i class="fa-solid fa-microphone mr-1"></i> Voice Note:</p><audio controls src="${item.audio}" class="w-full h-8"></audio></div>` : ''}
         `;
     }
     const detailModal = document.getElementById('detailModal');
@@ -338,11 +493,10 @@ function closeDetailModal() {
     if (detailModal) detailModal.classList.add('hidden');
 }
 
-let isAudioPlaying = true;
 function toggleBackgroundAudio() {
     const bgAudio = document.getElementById('bgAudio');
     const audioIcon = document.getElementById('audioIcon');
-    if (!bgAudio || !bgAudio.src) return alert("Tiada lagu latar untuk majlis ini.");
+    if (!bgAudio || !bgAudio.src) return alert("No background music set.");
     if (bgAudio.paused) {
         bgAudio.play();
         if (audioIcon) audioIcon.className = "fa-solid fa-music animate-pulse text-amber-300";
@@ -376,13 +530,13 @@ function renderTvSlide() {
     const container = document.getElementById('tvSlideContainer');
     if (!container) return;
     if (memoryFeed.length === 0) {
-        container.innerHTML = `<p class="text-slate-300 text-sm">Menunggu ucapan...</p>`;
+        container.innerHTML = `<p class="text-slate-300 text-sm">Waiting for wishes...</p>`;
         return;
     }
     const item = memoryFeed[tvCurrentIndex];
     let firstImg = (item.media && item.media.length > 0) ? item.media[0] : '';
     container.innerHTML = `
-        <span class="px-3 py-1 bg-amber-500/20 text-amber-300 rounded-full text-xs">${escapeHtml(item.name)} (${escapeHtml(item.table)})</span>
+        <span class="px-3 py-1 bg-amber-500/20 text-amber-300 rounded-full text-xs">${escapeHtml(item.name)} (Table ${escapeHtml(item.table)})</span>
         ${item.wish ? `<h3 class="text-xl md:text-2xl font-serif text-amber-100 italic">"${escapeHtml(item.wish)}"</h3>` : ''}
         ${firstImg ? `<img src="${firstImg}" class="max-h-64 mx-auto rounded-2xl border border-white/20 shadow-2xl">` : ''}
     `;

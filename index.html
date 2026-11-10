@@ -1,9 +1,5 @@
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-<script src="customer.js"></script>
-
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,40 +8,27 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="wedding-bg min-h-screen text-slate-100 flex flex-col font-sans relative overflow-x-hidden">
+<body class="wedding-bg min-h-screen text-slate-100 flex flex-col font-sans relative overflow-x-hidden pb-24">
 
     <!-- Dynamic Blurred Background Layer -->
     <div class="dynamic-bg-container">
         <div id="dynamicBg" class="dynamic-bg-image" style="background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1000&auto=format&fit=crop');"></div>
     </div>
 
-    <!-- Top Navbar -->
-    <header class="bg-slate-950/80 backdrop-blur-md border-b border-white/10 sticky top-0 z-40 px-4 py-3 shadow-lg">
-        <div class="max-w-3xl mx-auto flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <button onclick="toggleSidebar()" class="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-amber-300 hover:bg-white/20 transition">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-                <div class="flex items-center space-x-2">
-                    <img src="lenteraLogo.png" alt="Logo" class="w-9 h-9 rounded-lg object-contain bg-slate-900 border border-amber-500/30" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3076/3076753.png'">
-                    <div>
-                        <h1 class="text-base font-serif font-bold text-gradient tracking-wide" id="disp-wedding-title">LenteraKita</h1>
-                        <p class="text-[10px] text-amber-300/70 tracking-widest uppercase">Memori Abadi</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex items-center space-x-2">
-                <!-- Audio Player Widget -->
-                <button id="audioToggleBtn" onclick="toggleBackgroundAudio()" class="w-9 h-9 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center justify-center text-xs hover:bg-amber-500/30 transition" title="Pasang/Tutup Lagu">
-                    <i id="audioIcon" class="fa-solid fa-music animate-pulse"></i>
-                </button>
-                <audio id="bgAudio" loop></audio>
-
-                <button onclick="switchTab('feed')" class="px-3 py-1.5 rounded-full text-xs font-medium bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition">
-                    <i class="fa-solid fa-images mr-1"></i> Galeri
-                </button>
-            </div>
+    <!-- Top Instagram Header -->
+    <header class="bg-slate-950/80 backdrop-blur-md border-b border-white/10 sticky top-0 z-40 px-4 py-3 flex justify-between items-center shadow-lg">
+        <div class="flex items-center space-x-2">
+            <img src="lenteraLogo.png" alt="Logo" class="w-8 h-8 rounded-lg object-contain bg-slate-900 border border-amber-500/30" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3076/3076753.png'">
+            <h1 class="text-base font-serif font-bold text-gradient tracking-wide" id="disp-wedding-title">LenteraKita</h1>
+        </div>
+        <div class="flex items-center space-x-3">
+            <button onclick="toggleBackgroundAudio()" class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center justify-center text-xs hover:bg-amber-500/30 transition" title="Play/Pause Music">
+                <i id="audioIcon" class="fa-solid fa-music animate-pulse"></i>
+            </button>
+            <audio id="bgAudio" loop></audio>
+            <button onclick="toggleSidebar()" class="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center text-amber-300 hover:bg-white/20 transition">
+                <i class="fa-solid fa-bars"></i>
+            </button>
         </div>
     </header>
 
@@ -60,138 +43,150 @@
                 </div>
                 <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
-
             <nav class="space-y-2 text-sm">
                 <button onclick="switchTab('form'); toggleSidebar();" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-white/10 text-slate-200 transition text-left">
-                    <i class="fa-solid fa-pen-nib text-amber-400 w-5"></i>
-                    <span>Tulis Ucapan & Upload</span>
+                    <i class="fa-solid fa-pen-nib text-amber-400 w-5"></i><span>Write Wish & Upload</span>
                 </button>
                 <button onclick="switchTab('feed'); toggleSidebar();" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-white/10 text-slate-200 transition text-left">
-                    <i class="fa-solid fa-images text-amber-400 w-5"></i>
-                    <span>Galeri Kenangan (Feed)</span>
+                    <i class="fa-solid fa-images text-amber-400 w-5"></i><span>Memory Feed</span>
                 </button>
                 <button onclick="switchTab('tv'); toggleSidebar();" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-white/10 text-slate-200 transition text-left">
-                    <i class="fa-solid fa-tv text-amber-400 w-5"></i>
-                    <span>Mod TV (Slideshow)</span>
+                    <i class="fa-solid fa-tv text-amber-400 w-5"></i><span>TV Mode (Slideshow)</span>
                 </button>
             </nav>
         </div>
-
         <div class="border-t border-white/10 pt-4 text-center">
-            <a href="admin.html" class="text-xs text-amber-400/70 hover:text-amber-300 underline">
-                <i class="fa-solid fa-user-gear mr-1"></i> Super Admin Portal
-            </a>
+            <a href="admin.html" class="text-xs text-amber-400/70 hover:text-amber-300 underline"><i class="fa-solid fa-user-gear mr-1"></i> Super Admin Portal</a>
         </div>
     </aside>
 
-    <!-- Main Content -->
-    <main class="flex-grow max-w-2xl w-full mx-auto p-2 md:p-4 relative z-10 space-y-6">
-        <!-- Gantikan bahagian Welcome Card dalam index.html dengan kod ini -->
-        <div id="welcomeCardContainer" class="glass-card welcome-card-bg rounded-2xl p-6 text-center shadow-xl relative overflow-hidden">
-            <div class="welcome-card-content space-y-2">
-                <div class="inline-block px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold mb-2 uppercase tracking-wider">
-                    <i class="fa-solid fa-heart text-rose-500 mr-1"></i> Majlis Meraikan
+    <!-- Main Container (Mobile Focused) -->
+    <main class="flex-grow max-w-md w-full mx-auto p-2 md:p-3 space-y-4 relative z-10">
+
+        <!-- 1. STORIES / HIGHLIGHTS CIRCLES ATAS -->
+        <div class="stories-container bg-slate-950/50 p-3 rounded-2xl border border-white/10 shadow-lg">
+            <div class="flex flex-col items-center space-y-1 cursor-pointer flex-shrink-0" onclick="switchTab('form')">
+                <div class="story-ring">
+                    <div class="story-inner bg-slate-900 flex items-center justify-center text-amber-300 text-lg">
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
                 </div>
-                <h2 class="text-2xl md:text-3xl font-serif font-bold text-amber-100 mb-2" id="disp-groom-bride">Memuatkan Majlis...</h2>
-                <p class="text-xs text-amber-200/70 italic mb-2" id="disp-wedding-date">Sila tunggu sebentar...</p>
-                <p class="text-xs text-amber-100/90 leading-relaxed font-light" id="disp-welcome-msg">Abadikan kenangan terindah bersama kami di sini.</p>
+                <span class="text-[10px] text-slate-300 truncate w-16 text-center">Add Story</span>
+            </div>
+            <div id="storiesHighlightsBar" class="flex space-x-3"></div>
+        </div>
+
+        <!-- WELCOME CARD -->
+        <div id="welcomeCardContainer" class="glass-card welcome-card-bg rounded-2xl p-5 text-center shadow-xl relative overflow-hidden">
+            <div class="welcome-card-content space-y-2">
+                <div class="inline-block px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px] font-semibold uppercase tracking-wider">
+                    <i class="fa-solid fa-heart text-rose-500 mr-1"></i> Celebrating Event
+                </div>
+                <h2 class="text-xl md:text-2xl font-serif font-bold text-amber-100" id="disp-groom-bride">Loading Event...</h2>
+                <p class="text-[11px] text-amber-200/80 italic" id="disp-wedding-date">Please wait a moment...</p>
+                <p class="text-xs text-amber-100/90 font-light" id="disp-welcome-msg">Capture and share your wonderful memories with us here.</p>
             </div>
         </div>
 
-        <!-- Feed Tab -->
-        <div id="tab-feed" class="space-y-3">
+        <!-- 2. TAB FEED (INSTAGRAM VERTICAL POSTS) -->
+        <div id="tab-feed" class="space-y-4">
+            <div id="igFeedContainer" class="space-y-4"></div>
+        </div>
+
+        <!-- 3. TAB EXPLORE (GRID VIEW) -->
+        <div id="tab-explore" class="space-y-3 hidden">
             <div class="flex justify-between items-center bg-slate-950/80 p-2 rounded-xl border border-white/10 text-xs">
-                <span class="text-slate-400 px-2 font-medium">Galeri Kenangan</span>
+                <span class="text-slate-400 px-2 font-medium">Explore Gallery</span>
                 <div class="flex space-x-1">
-                    <button onclick="filterFeed('all')" id="filter-all" class="px-3 py-1 rounded-lg font-medium bg-amber-500 text-slate-950 text-xs">Semua</button>
-                    <button onclick="filterFeed('photo')" id="filter-photo" class="px-3 py-1 rounded-lg font-medium text-slate-300 hover:text-white text-xs">Gambar</button>
-                    <button onclick="filterFeed('voice')" id="filter-voice" class="px-3 py-1 rounded-lg font-medium text-slate-300 hover:text-white text-xs">Suara</button>
+                    <button onclick="filterFeed('all')" id="filter-all" class="px-2.5 py-1 rounded-lg font-medium bg-amber-500 text-slate-950 text-xs">All</button>
+                    <button onclick="filterFeed('photo')" id="filter-photo" class="px-2.5 py-1 rounded-lg font-medium text-slate-300 text-xs">Photos</button>
+                    <button onclick="filterFeed('voice')" id="filter-voice" class="px-2.5 py-1 rounded-lg font-medium text-slate-300 text-xs">Voice</button>
                 </div>
             </div>
             <div id="feedGrid" class="memory-grid rounded-2xl overflow-hidden border border-white/10"></div>
         </div>
 
-        <!-- Form Tab -->
+        <!-- 4. TAB FORM (UPLOAD) -->
         <div id="tab-form" class="space-y-4 hidden">
             <div class="flex justify-between items-center bg-slate-950/80 px-4 py-3 rounded-xl border border-white/10">
-                <h3 class="font-serif font-bold text-amber-300 text-sm">Hantar Kenangan Baharu</h3>
-                <button onclick="switchTab('feed')" class="text-xs text-slate-400 hover:text-white"><i class="fa-solid fa-xmark mr-1"></i> Tutup</button>
+                <h3 class="font-serif font-bold text-amber-300 text-sm">Send New Memory</h3>
+                <button onclick="switchTab('feed')" class="text-xs text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i> Close</button>
             </div>
             
-            <form id="guestForm" onsubmit="handleFormSubmit(event)" class="glass-card rounded-2xl p-5 shadow-2xl space-y-4">
-                <div class="grid grid-cols-3 gap-3 text-xs">
+            <form id="guestForm" onsubmit="handleFormSubmit(event)" class="glass-card rounded-2xl p-4 shadow-2xl space-y-3 text-xs">
+                <div class="grid grid-cols-3 gap-2">
                     <div class="col-span-2">
-                        <label class="block text-amber-200/80 mb-1">Nama Anda *</label>
-                        <input type="text" id="guestName" required placeholder="Cth: Amirul & Family" class="w-full bg-slate-900/80 border border-white/15 rounded-xl px-3 py-2.5 text-amber-50 outline-none">
+                        <label class="block text-amber-200/80 mb-1">Your Name *</label>
+                        <input type="text" id="guestName" required placeholder="E.g: Amirul" class="w-full bg-slate-900/80 border border-white/15 rounded-xl px-3 py-2 text-amber-50 outline-none">
                     </div>
                     <div>
-                        <label class="block text-amber-200/80 mb-1">No. Meja</label>
-                        <input type="text" id="tableNo" placeholder="M05" class="w-full bg-slate-900/80 border border-white/15 rounded-xl px-3 py-2.5 text-amber-50 text-center outline-none">
+                        <label class="block text-amber-200/80 mb-1">Table No.</label>
+                        <input type="text" id="tableNo" placeholder="M05" class="w-full bg-slate-900/80 border border-white/15 rounded-xl px-3 py-2 text-amber-50 text-center outline-none">
                     </div>
                 </div>
 
-                <div class="text-xs">
-                    <label class="block text-amber-200/80 mb-1">Ucapan & Doa</label>
-                    <textarea id="guestWish" rows="3" placeholder="Tuliskan ucapan..." class="w-full bg-slate-900/80 border border-white/15 rounded-xl p-3 text-amber-50 outline-none resize-none"></textarea>
+                <div>
+                    <label class="block text-amber-200/80 mb-1">Wishes & Prayers</label>
+                    <textarea id="guestWish" rows="2" placeholder="Write your warm wishes..." class="w-full bg-slate-900/80 border border-white/15 rounded-xl p-2.5 text-amber-50 outline-none resize-none"></textarea>
                     <div class="flex flex-wrap gap-1.5 mt-2">
-                        <button type="button" onclick="addWishTag('Selamat Pengantin Baru!')" class="text-[10px] bg-slate-900 text-amber-300 border border-white/10 px-2.5 py-1 rounded-full">✨ Selamat Pengantin Baru</button>
-                        <button type="button" onclick="addWishTag('Barakallahulakuma!')" class="text-[10px] bg-slate-900 text-amber-300 border border-white/10 px-2.5 py-1 rounded-full">🤲 Barakallah</button>
-                        <button type="button" onclick="addWishTag('Kekal Till Jannah ❤️')" class="text-[10px] bg-slate-900 text-amber-300 border border-white/10 px-2.5 py-1 rounded-full">❤️ Till Jannah</button>
+                        <button type="button" onclick="addWishTag('Happy Wedding!')" class="text-[10px] bg-slate-900 text-amber-300 border border-white/10 px-2 py-1 rounded-full">✨ Happy Wedding</button>
+                        <button type="button" onclick="addWishTag('Barakallahulakuma!')" class="text-[10px] bg-slate-900 text-amber-300 border border-white/10 px-2 py-1 rounded-full">🤲 Barakallah</button>
+                        <button type="button" onclick="addWishTag('Till Jannah ❤️')" class="text-[10px] bg-slate-900 text-amber-300 border border-white/10 px-2 py-1 rounded-full">❤️ Till Jannah</button>
                     </div>
                 </div>
 
-                <!-- Multiple Upload -->
-                <div class="text-xs">
-                    <label class="block text-amber-200/80 mb-1">Upload Banyak Gambar / Video Sekaligus</label>
-                    <div class="border-2 border-dashed border-white/15 hover:border-amber-400/50 rounded-xl p-4 text-center cursor-pointer bg-slate-900/40" onclick="document.getElementById('mediaInput').click()">
+                <div>
+                    <label class="block text-amber-200/80 mb-1">Upload Multiple Photos / Videos</label>
+                    <div class="border-2 border-dashed border-white/15 rounded-xl p-3 text-center cursor-pointer bg-slate-900/40" onclick="document.getElementById('mediaInput').click()">
                         <input type="file" id="mediaInput" accept="image/*,video/*" multiple class="hidden" onchange="handleFileSelect(event)">
-                        <div id="uploadPlaceholder">
-                            <i class="fa-solid fa-images text-xl text-amber-400/70 mb-1"></i>
-                            <p class="text-xs text-slate-300">Klik untuk pilih gambar/video</p>
-                        </div>
-                        <div id="mediaPreviewContainer" class="hidden grid grid-cols-3 gap-2 pt-2"></div>
+                        <div id="uploadPlaceholder"><i class="fa-solid fa-images text-lg text-amber-400 mb-1"></i><p class="text-[11px] text-slate-300">Click to choose files</p></div>
+                        <div id="mediaPreviewContainer" class="hidden grid grid-cols-3 gap-1 pt-2"></div>
                     </div>
                 </div>
 
-                <!-- Voice Note -->
-                <div class="text-xs">
-                    <label class="block text-amber-200/80 mb-1">Rakam Ucapan Suara (Voice Note)</label>
+                <div>
+                    <label class="block text-amber-200/80 mb-1">Record Voice Note</label>
                     <div class="bg-slate-900/80 border border-white/15 rounded-xl p-3 flex flex-col items-center justify-center space-y-2">
                         <div class="flex items-center space-x-3 w-full justify-center">
-                            <button type="button" id="recordBtn" onclick="toggleRecording()" class="w-10 h-10 rounded-full bg-red-600 text-white flex items-center justify-center shadow-lg"><i class="fa-solid fa-microphone"></i></button>
+                            <button type="button" id="recordBtn" onclick="toggleRecording()" class="w-9 h-9 rounded-full bg-red-600 text-white flex items-center justify-center shadow-lg"><i class="fa-solid fa-microphone"></i></button>
                             <div class="text-left">
-                                <p id="recordStatus" class="text-xs text-amber-200/80">Tekan mikrofon untuk mula rakam</p>
-                                <p id="recordTimer" class="text-[11px] font-mono text-amber-400 hidden">00:00 / 00:30</p>
+                                <p id="recordStatus" class="text-[11px] text-amber-200/80">Press mic to record</p>
+                                <p id="recordTimer" class="text-[10px] font-mono text-amber-400 hidden">00:00 / 00:30</p>
                             </div>
                         </div>
                         <div id="audioPreviewContainer" class="hidden w-full pt-1">
-                            <audio id="audioPreview" controls class="w-full h-8 rounded-lg"></audio>
-                            <button type="button" onclick="clearAudioRecording()" class="text-[10px] text-red-400 hover:underline mt-1 block mx-auto">Padam & Rakam Semula</button>
+                            <audio id="audioPreview" controls class="w-full h-7 rounded-lg"></audio>
+                            <button type="button" onclick="clearAudioRecording()" class="text-[10px] text-red-400 hover:underline mt-1 block mx-auto">Delete & Re-record</button>
                         </div>
                     </div>
                 </div>
 
-                <button type="submit" id="submitBtn" class="w-full py-3 bg-gradient-to-r from-amber-600 to-yellow-500 text-slate-950 font-bold rounded-xl shadow-lg text-xs tracking-wide">
-                    <i class="fa-solid fa-paper-plane mr-2"></i> Hantar Kenangan
-                </button>
+                <button type="submit" id="submitBtn" class="w-full py-2.5 bg-gradient-to-r from-amber-600 to-yellow-500 text-slate-950 font-bold rounded-xl shadow-lg">Submit Memory</button>
             </form>
         </div>
     </main>
 
-    <button onclick="switchTab('form')" class="floating-action-btn" title="Tambah Kenangan"><i class="fa-solid fa-plus"></i></button>
+    <!-- DYNAMIC INSTAGRAM BOTTOM NAVIGATION BAR -->
+    <nav class="ig-bottom-nav">
+        <button onclick="switchTab('feed')" id="nav-feed" class="ig-nav-item active" title="Feed"><i class="fa-solid fa-house"></i></button>
+        <button onclick="switchTab('explore')" id="nav-explore" class="ig-nav-item" title="Explore Grid"><i class="fa-solid fa-compass"></i></button>
+        <button onclick="switchTab('form')" id="nav-form" class="ig-nav-add" title="Add Memory"><i class="fa-solid fa-plus"></i></button>
+        <button onclick="switchTab('tv')" id="nav-tv" class="ig-nav-item" title="TV Slideshow"><i class="fa-solid fa-tv"></i></button>
+    </nav>
 
-    <!-- Modal Detail & TV -->
+    <!-- MODAL DETAIL -->
     <div id="detailModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="glass-card max-w-lg w-full rounded-2xl p-5 border border-white/20 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            <button onclick="closeDetailModal()" class="absolute top-4 right-4 w-8 h-8 bg-slate-900/80 text-white rounded-full flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-            <div id="modalContent" class="space-y-4"></div>
+        <div class="glass-card max-w-sm w-full rounded-2xl p-4 relative space-y-3">
+            <button onclick="closeDetailModal()" class="absolute top-3 right-3 text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <div id="modalContent" class="space-y-3"></div>
         </div>
     </div>
 
+    <!-- MODAL TV -->
     <div id="tvModal" class="fixed inset-0 bg-slate-950 z-50 hidden flex flex-col justify-between p-6">
         <div class="flex justify-between items-center border-b border-white/10 pb-4">
-            <h2 class="text-xl font-serif font-bold text-amber-300">Mod TV (Live Slideshow)</h2>
-            <button onclick="closeTvMode()" class="px-3 py-1.5 bg-slate-900 border border-white/20 rounded-xl text-xs text-slate-300">Tutup</button>
+            <h2 class="text-xl font-serif font-bold text-amber-300">TV Mode (Live Slideshow)</h2>
+            <button onclick="closeTvMode()" class="px-3 py-1.5 bg-slate-900 border border-white/20 rounded-xl text-xs text-slate-300">Close</button>
         </div>
         <div class="flex-grow flex items-center justify-center p-4">
             <div id="tvSlideContainer" class="max-w-2xl w-full glass-card p-8 rounded-3xl text-center space-y-4 shadow-2xl border border-amber-500/30"></div>
@@ -201,6 +196,6 @@
 
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-    <script src="app.js"></script>
+    <script src="customer.js"></script>
 </body>
 </html>
