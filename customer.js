@@ -163,7 +163,7 @@ async function openCameraModal() {
         });
         video.srcObject = cameraStream;
     } catch (err) {
-        alert("Camera access denied or unavailable.");
+        alert("Camera access denied or unavailable. Sila pastikan guna HTTPS / Localhost.");
         closeCameraModal();
     }
 }
@@ -226,7 +226,7 @@ function updateCameraThumbBadge() {
 
 function proceedToWishesStep() {
     if (selectedMediaFiles.length === 0) {
-        return alert("Please capture at least one photo first!");
+        return alert("Sila tangkap sekurang-kurangnya satu gambar terlebih dahulu!");
     }
     closeCameraModal();
     switchTab('capture');
@@ -260,7 +260,7 @@ function handleFileSelect(event) {
     });
 }
 
-// --- Voice Vault Recording ---
+// --- Voice Vault Recording (Dibaiki & Dioptimumkan) ---
 async function toggleRecording() {
     const recordBtn = document.getElementById('recordBtn');
     const statusText = document.getElementById('recordStatus');
@@ -270,26 +270,53 @@ async function toggleRecording() {
         mediaRecorder.stop();
         return;
     }
+
     try {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            alert("Pelayar web anda tidak menyokong rakaman audio.");
+            return;
+        }
+
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorder = new MediaRecorder(stream);
+        
+        // Pilih format yang disokong oleh pelayar (Chrome/Safari)
+        let options = { mimeType: 'audio/webm' };
+        if (!MediaRecorder.isTypeSupported('audio/webm')) {
+            if (MediaRecorder.isTypeSupported('audio/mp4')) {
+                options = { mimeType: 'audio/mp4' };
+            } else {
+                options = {}; // Guna default pelayar
+            }
+        }
+
+        mediaRecorder = new MediaRecorder(stream, options);
         audioChunks = [];
-        mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
+
+        mediaRecorder.ondataavailable = (e) => {
+            if (e.data && e.data.size > 0) {
+                audioChunks.push(e.data);
+            }
+        };
+
         mediaRecorder.onstart = () => {
             if (recordBtn) recordBtn.classList.replace('bg-red-600', 'bg-amber-500');
-            if (statusText) statusText.innerText = "Recording voice...";
+            if (statusText) statusText.innerText = "Sedang merakam suara...";
             if (timerText) timerText.classList.remove('hidden');
             recordSeconds = 0;
             recordTimerInterval = setInterval(() => {
                 recordSeconds++;
-                if (recordSeconds >= 30) toggleRecording();
+                if (recordSeconds >= 30) {
+                    toggleRecording(); // Auto stop lepas 30 saat
+                }
             }, 1000);
         };
+
         mediaRecorder.onstop = () => {
             clearInterval(recordTimerInterval);
             if (recordBtn) recordBtn.classList.replace('bg-amber-500', 'bg-red-600');
-            if (statusText) statusText.innerText = "Recorded successfully!";
-            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            if (statusText) statusText.innerText = "Rakaman berjaya disimpan!";
+            
+            const audioBlob = new Blob(audioChunks, { type: options.mimeType || 'audio/webm' });
             const reader = new FileReader();
             reader.onloadend = () => {
                 recordedAudioBase64 = reader.result;
@@ -301,8 +328,12 @@ async function toggleRecording() {
             reader.readAsDataURL(audioBlob);
             stream.getTracks().forEach(t => t.stop());
         };
+
         mediaRecorder.start();
-    } catch (err) { alert("Microphone access denied."); }
+    } catch (err) {
+        console.error("Mic error:", err);
+        alert("Gagal mengakses mikrofon. Pastikan kebenaran mikrofon (Microphone Permission) telah diberikan pada pelayar web anda.");
+    }
 }
 
 function clearAudioRecording() {
@@ -311,15 +342,15 @@ function clearAudioRecording() {
     const statusText = document.getElementById('recordStatus');
     const timerText = document.getElementById('recordTimer');
     if (audioContainer) audioContainer.classList.add('hidden');
-    if (statusText) statusText.innerText = "Press microphone to record (Max 30s)";
+    if (statusText) statusText.innerText = "Tekan mikrofon untuk mula merakam (Maks 30s)";
     if (timerText) timerText.classList.add('hidden');
 }
 
 function submitVoiceNote() {
-    if (!recordedAudioBase64) return alert("Please record an audio first!");
+    if (!recordedAudioBase64) return alert("Sila rakam suara terlebih dahulu!");
     const nameInput = document.getElementById('voiceSenderName');
-    const name = nameInput ? nameInput.value.trim() : "Guest";
-    if (!name) return alert("Please enter your name!");
+    const name = nameInput ? nameInput.value.trim() : "Tetamu";
+    if (!name) return alert("Sila masukkan nama anda!");
 
     const newVoiceMemory = {
         name: name,
@@ -334,10 +365,10 @@ function submitVoiceNote() {
     };
 
     eventsRef.child(currentEventId).child('memories').push(newVoiceMemory).then(() => {
-        alert("Voice note submitted successfully!");
+        alert("Voice note berjaya dihantar!");
         clearAudioRecording();
         if (nameInput) nameInput.value = '';
-        switchTab('voice');
+        switchTab('feed');
     });
 }
 
@@ -348,7 +379,7 @@ function renderVoiceVault() {
     const voiceMemories = memoryFeed.filter(item => item.audio !== null);
 
     if (voiceMemories.length === 0) {
-        listContainer.innerHTML = `<div class="py-10 text-center text-slate-400 text-xs">No voice notes recorded yet. Be the first!</div>`;
+        listContainer.innerHTML = `<div class="py-10 text-center text-slate-400 text-xs">Tiada voice note lagi. Jadilah yang pertama!</div>`;
         return;
     }
 
@@ -373,12 +404,12 @@ function handleFormSubmit(e) {
     const name = nameInput.value.trim();
     const table = tableInput ? tableInput.value.trim() : '';
     const wish = wishInput ? wishInput.value.trim() : '';
-    if (!name) return alert("Please enter your name!");
+    if (!name) return alert("Sila masukkan nama anda!");
 
     const submitBtn = document.getElementById('submitBtn');
     if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-2"></i> Submitting...`;
+        submitBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-2"></i> Sedang menghantar...`;
     }
 
     const newMemory = {
@@ -413,15 +444,15 @@ function resetForm() {
     }
 }
 
-// --- Render Feed & Carousel Slider ---
+// --- Render Feed & Carousel Slider (Download Diperbaiki) ---
 function renderFeed() {
     const feedContainer = document.getElementById('igFeedContainer');
     const storiesBar = document.getElementById('storiesHighlightsBar');
     if (!feedContainer) return;
 
     if (memoryFeed.length === 0) {
-        feedContainer.innerHTML = `<div class="py-12 text-center text-slate-400 text-xs">No memories yet. Be the first to share!</div>`;
-        if (storiesBar) storiesBar.innerHTML = `<p class="text-[10px] text-slate-400 px-2">No stories yet</p>`;
+        feedContainer.innerHTML = `<div class="py-12 text-center text-slate-400 text-xs">Tiada memori lagi. Jadilah yang pertama berkongsi!</div>`;
+        if (storiesBar) storiesBar.innerHTML = `<p class="text-[10px] text-slate-400 px-2">Tiada stories</p>`;
         return;
     }
 
@@ -464,6 +495,13 @@ function renderFeed() {
 
         const commentsList = item.comments ? Object.values(item.comments).map(c => `<p class="text-[11px] text-slate-300"><strong class="text-amber-300">${escapeHtml(c.name)}:</strong> ${escapeHtml(c.text)}</p>`).join('') : '';
 
+        // Fungsi Download Diperbaiki menggunakan Blob supaya tidak terhalang oleh CORS pelayar
+        const firstImgUrl = (item.media && item.media[0]) ? item.media[0] : '';
+        const downloadBtnHtml = firstImgUrl ? `
+            <button onclick="downloadImage('${firstImgUrl}')" class="text-xs text-amber-300 bg-amber-500/20 px-2.5 py-1 rounded-lg border border-amber-500/30 hover:bg-amber-500/30" title="Muat turun gambar">
+                <i class="fa-solid fa-download mr-1"></i> Save
+            </button>` : '';
+
         return `
             <div class="bg-slate-900/85 backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden shadow-lg space-y-2 pb-3">
                 <div class="flex items-center justify-between p-3 pb-0">
@@ -476,7 +514,7 @@ function renderFeed() {
                             <p class="text-[10px] text-slate-400">Table: ${escapeHtml(item.table)} • ${item.dateStr || ''}</p>
                         </div>
                     </div>
-                    ${item.media && item.media[0] ? `<a href="${item.media[0]}" download="lenterakita-memory.jpg" target="_blank" class="text-xs text-amber-300 bg-amber-500/20 px-2.5 py-1 rounded-lg border border-amber-500/30 hover:bg-amber-500/30" title="Download Image"><i class="fa-solid fa-download mr-1"></i> Save</a>` : ''}
+                    ${downloadBtnHtml}
                 </div>
 
                 ${mediaSliderHtml}
@@ -503,7 +541,7 @@ function renderFeed() {
                 <div class="px-4 pt-1 space-y-1">
                     <div id="comments-box-${item.id}" class="space-y-1 max-h-24 overflow-y-auto">${commentsList}</div>
                     <div class="flex space-x-2 pt-1">
-                        <input type="text" id="comment-input-${item.id}" placeholder="Add a comment..." class="flex-grow bg-slate-950 border border-white/10 rounded-lg px-2.5 py-1 text-[11px] text-white outline-none focus:border-amber-400">
+                        <input type="text" id="comment-input-${item.id}" placeholder="Tambah komen..." class="flex-grow bg-slate-950 border border-white/10 rounded-lg px-2.5 py-1 text-[11px] text-white outline-none focus:border-amber-400">
                         <button onclick="postComment('${item.id}')" class="px-3 py-1 bg-amber-500 text-slate-950 text-[11px] font-bold rounded-lg hover:bg-amber-400">Post</button>
                     </div>
                 </div>
@@ -512,6 +550,26 @@ function renderFeed() {
     }).join('');
 
     renderExploreGrid();
+}
+
+// Fungsi Muat Turun Selamat (Mengelakkan isu CORS & Download Error)
+async function downloadImage(url) {
+    try {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = blobUrl;
+        a.download = `lenterakita-${Date.now()}.jpg`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(blobUrl);
+        document.body.removeChild(a);
+    } catch (err) {
+        // Fallback jika fetch dihalang
+        window.open(url, '_blank');
+    }
 }
 
 function slideMedia(itemId, direction, totalSlides) {
@@ -554,7 +612,7 @@ function postComment(itemId) {
     if (!input || !input.value.trim()) return;
 
     const commentText = input.value.trim();
-    const commenterName = prompt("Enter your name for the comment:", "Guest") || "Guest";
+    const commenterName = prompt("Masukkan nama anda untuk komen:", "Guest") || "Guest";
 
     const newComment = { name: commenterName, text: commentText, timestamp: Date.now() };
     eventsRef.child(currentEventId).child('memories').child(itemId).child('comments').push(newComment).then(() => {
@@ -592,7 +650,7 @@ function renderExploreGrid() {
             });
         }
     });
-    feedGrid.innerHTML = tilesHtml.length > 0 ? tilesHtml.join('') : `<div class="col-span-3 py-10 text-center text-slate-400 text-xs">No media found.</div>`;
+    feedGrid.innerHTML = tilesHtml.length > 0 ? tilesHtml.join('') : `<div class="col-span-3 py-10 text-center text-slate-400 text-xs">Tiada media dijumpai.</div>`;
 }
 
 function openDetailModal(itemId) {
@@ -620,6 +678,7 @@ function openDetailModal(itemId) {
         `;
     }
     const detailModal = document.getElementById('detailModal');
+    if (detailModal) detailModal.classList.add('hidden'); // Fix typo to remove hidden
     if (detailModal) detailModal.classList.remove('hidden');
 }
 
@@ -631,7 +690,7 @@ function closeDetailModal() {
 function toggleBackgroundAudio() {
     const bgAudio = document.getElementById('bgAudio');
     const audioIcon = document.getElementById('audioIcon');
-    if (!bgAudio || !bgAudio.src) return alert("No background music set.");
+    if (!bgAudio || !bgAudio.src) return alert("Tiada muzik latar belakang ditetapkan.");
     if (bgAudio.paused) {
         bgAudio.play();
         if (audioIcon) audioIcon.className = "fa-solid fa-music animate-pulse text-amber-300";
@@ -665,7 +724,7 @@ function renderTvSlide() {
     const container = document.getElementById('tvSlideContainer');
     if (!container) return;
     if (memoryFeed.length === 0) {
-        container.innerHTML = `<p class="text-slate-300 text-sm">Waiting for wishes...</p>`;
+        container.innerHTML = `<p class="text-slate-300 text-sm">Menunggu ucapan daripada tetamu...</p>`;
         return;
     }
     const item = memoryFeed[tvCurrentIndex];
