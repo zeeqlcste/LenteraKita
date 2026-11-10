@@ -1,4 +1,3 @@
-// --- 1. FIREBASE CONFIGURATION ---
 const firebaseConfig = {
     databaseURL: "https://lenterakita-default-rtdb.asia-southeast1.firebasedatabase.app/"
 };
@@ -26,6 +25,10 @@ let recordSeconds = 0;
 let currentFilter = 'all';
 let tvSlideshowInterval = null;
 let tvCurrentIndex = 0;
+let cameraStream = null;
+let currentFacingMode = 'environment';
+let activeFilterClass = 'filter-normal';
+let sliderIndexes = {};
 
 document.addEventListener('DOMContentLoaded', () => {
     initGuestView();
@@ -80,6 +83,7 @@ function initGuestView() {
             memoryFeed.sort((a, b) => b.timestamp - a.timestamp);
         }
         renderFeed();
+        renderVoiceVault();
         updateDynamicBackground();
     });
 }
@@ -116,7 +120,7 @@ function switchTab(tabName) {
         openTvMode();
         return;
     }
-    ['feed', 'explore', 'form'].forEach(t => {
+    ['feed', 'explore', 'capture', 'voice'].forEach(t => {
         const el = document.getElementById(`tab-${t}`);
         const nav = document.getElementById(`nav-${t}`);
         if (el) el.classList.add('hidden');
@@ -129,6 +133,7 @@ function switchTab(tabName) {
     if (targetNav) targetNav.classList.add('active');
 
     if (tabName === 'explore') renderExploreGrid();
+    if (tabName === 'voice') renderVoiceVault();
 }
 
 function addWishTag(tagText) {
@@ -138,17 +143,112 @@ function addWishTag(tagText) {
     }
 }
 
+// --- Live Camera & Aesthetic Filter Studio ---
+async function openCameraModal() {
+    const modal = document.getElementById('cameraModal');
+    const video = document.getElementById('cameraVideo');
+    if (!modal || !video) return;
+
+    modal.classList.remove('hidden');
+    selectedMediaFiles = [];
+    updateCameraThumbBadge();
+
+    try {
+        if (cameraStream) {
+            cameraStream.getTracks().forEach(t => t.stop());
+        }
+        cameraStream = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: currentFacingMode }, 
+            audio: false 
+        });
+        video.srcObject = cameraStream;
+    } catch (err) {
+        alert("Camera access denied or unavailable.");
+        closeCameraModal();
+    }
+}
+
+function closeCameraModal() {
+    const modal = document.getElementById('cameraModal');
+    if (modal) modal.classList.add('hidden');
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(t => t.stop());
+        cameraStream = null;
+    }
+}
+
+function setCameraFilter(filterName, btnElement) {
+    activeFilterClass = filterName;
+    const video = document.getElementById('cameraVideo');
+    if (video) {
+        video.className = `w-full h-full object-cover ${filterName} transition-all duration-300`;
+    }
+    document.querySelectorAll('.filter-chip').forEach(b => {
+        b.className = "filter-chip px-3 py-1.5 rounded-full bg-white/20 text-white font-medium text-[11px] flex-shrink-0";
+    });
+    btnElement.className = "filter-chip px-3 py-1.5 rounded-full bg-amber-500 text-slate-950 font-bold text-[11px] flex-shrink-0";
+}
+
+function switchCameraFacing() {
+    currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
+    openCameraModal();
+}
+
+function capturePhotoFromCamera() {
+    const video = document.getElementById('cameraVideo');
+    const canvas = document.getElementById('cameraCanvas');
+    if (!video || !canvas) return;
+
+    canvas.width = video.videoWidth || 720;
+    canvas.height = video.videoHeight || 1280;
+    const ctx = canvas.getContext('2d');
+
+    ctx.filter = window.getComputedStyle(video).getPropertyValue('filter');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.90);
+    selectedMediaFiles.push(dataUrl);
+
+    updateCameraThumbBadge();
+    
+    const thumbBox = document.getElementById('thumbPreviewBox');
+    if (thumbBox) {
+        thumbBox.innerHTML = `<img src="${dataUrl}" class="w-full h-full object-cover">`;
+        thumbBox.classList.add('scale-110', 'border-amber-400');
+        setTimeout(() => thumbBox.classList.remove('scale-110', 'border-amber-400'), 200);
+    }
+}
+
+function updateCameraThumbBadge() {
+    const badge = document.getElementById('capturedCountBadge');
+    if (badge) badge.innerText = `${selectedMediaFiles.length} Photos`;
+}
+
+function proceedToWishesStep() {
+    if (selectedMediaFiles.length === 0) {
+        return alert("Please capture at least one photo first!");
+    }
+    closeCameraModal();
+    switchTab('capture');
+
+    const previewContainer = document.getElementById('mediaPreviewContainer');
+    if (previewContainer) {
+        previewContainer.classList.remove('hidden');
+        previewContainer.innerHTML = selectedMediaFiles.map(url => `
+            <div class="relative aspect-square rounded-lg overflow-hidden border border-white/20">
+                <img src="${url}" class="w-full h-full object-cover">
+            </div>
+        `).join('');
+    }
+}
+
 function handleFileSelect(event) {
     const files = event.target.files;
     if (!files || files.length === 0) return;
-    selectedMediaFiles = [];
     const previewContainer = document.getElementById('mediaPreviewContainer');
-    const placeholder = document.getElementById('uploadPlaceholder');
-    if (!previewContainer || !placeholder) return;
+    if (!previewContainer) return;
 
-    previewContainer.innerHTML = '';
     previewContainer.classList.remove('hidden');
-    placeholder.classList.add('hidden');
 
     Array.from(files).forEach((file) => {
         const reader = new FileReader();
@@ -160,19 +260,7 @@ function handleFileSelect(event) {
     });
 }
 
-function clearMediaSelection() {
-    selectedMediaFiles = [];
-    const mediaInput = document.getElementById('mediaInput');
-    const placeholder = document.getElementById('uploadPlaceholder');
-    const previewContainer = document.getElementById('mediaPreviewContainer');
-    if (mediaInput) mediaInput.value = '';
-    if (placeholder) placeholder.classList.remove('hidden');
-    if (previewContainer) {
-        previewContainer.innerHTML = '';
-        previewContainer.classList.add('hidden');
-    }
-}
-
+// --- Voice Vault Recording ---
 async function toggleRecording() {
     const recordBtn = document.getElementById('recordBtn');
     const statusText = document.getElementById('recordStatus');
@@ -189,7 +277,7 @@ async function toggleRecording() {
         mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
         mediaRecorder.onstart = () => {
             if (recordBtn) recordBtn.classList.replace('bg-red-600', 'bg-amber-500');
-            if (statusText) statusText.innerText = "Recording...";
+            if (statusText) statusText.innerText = "Recording voice...";
             if (timerText) timerText.classList.remove('hidden');
             recordSeconds = 0;
             recordTimerInterval = setInterval(() => {
@@ -200,7 +288,7 @@ async function toggleRecording() {
         mediaRecorder.onstop = () => {
             clearInterval(recordTimerInterval);
             if (recordBtn) recordBtn.classList.replace('bg-amber-500', 'bg-red-600');
-            if (statusText) statusText.innerText = "Done!";
+            if (statusText) statusText.innerText = "Recorded successfully!";
             const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -223,8 +311,56 @@ function clearAudioRecording() {
     const statusText = document.getElementById('recordStatus');
     const timerText = document.getElementById('recordTimer');
     if (audioContainer) audioContainer.classList.add('hidden');
-    if (statusText) statusText.innerText = "Press mic to record";
+    if (statusText) statusText.innerText = "Press microphone to record (Max 30s)";
     if (timerText) timerText.classList.add('hidden');
+}
+
+function submitVoiceNote() {
+    if (!recordedAudioBase64) return alert("Please record an audio first!");
+    const nameInput = document.getElementById('voiceSenderName');
+    const name = nameInput ? nameInput.value.trim() : "Guest";
+    if (!name) return alert("Please enter your name!");
+
+    const newVoiceMemory = {
+        name: name,
+        table: 'Voice Vault',
+        wish: 'Voice Note Wish 🎙️',
+        media: null,
+        audio: recordedAudioBase64,
+        likes: 0,
+        comments: [],
+        timestamp: Date.now(),
+        dateStr: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+
+    eventsRef.child(currentEventId).child('memories').push(newVoiceMemory).then(() => {
+        alert("Voice note submitted successfully!");
+        clearAudioRecording();
+        if (nameInput) nameInput.value = '';
+        switchTab('voice');
+    });
+}
+
+function renderVoiceVault() {
+    const listContainer = document.getElementById('voiceNotesList');
+    if (!listContainer) return;
+
+    const voiceMemories = memoryFeed.filter(item => item.audio !== null);
+
+    if (voiceMemories.length === 0) {
+        listContainer.innerHTML = `<div class="py-10 text-center text-slate-400 text-xs">No voice notes recorded yet. Be the first!</div>`;
+        return;
+    }
+
+    listContainer.innerHTML = voiceMemories.map(item => `
+        <div class="glass-card p-3 rounded-2xl border border-amber-500/30 space-y-2">
+            <div class="flex justify-between items-center">
+                <span class="text-xs font-bold text-amber-200"><i class="fa-solid fa-microphone text-amber-400 mr-1.5"></i> ${escapeHtml(item.name)}</span>
+                <span class="text-[10px] text-slate-400">${item.dateStr || ''}</span>
+            </div>
+            <audio controls src="${item.audio}" class="w-full h-8"></audio>
+        </div>
+    `).join('');
 }
 
 function handleFormSubmit(e) {
@@ -248,7 +384,7 @@ function handleFormSubmit(e) {
     const newMemory = {
         name, table: table || 'Guest', wish: wish || '',
         media: selectedMediaFiles.length > 0 ? selectedMediaFiles : null,
-        audio: recordedAudioBase64 || null,
+        audio: null,
         likes: 0,
         comments: [],
         timestamp: Date.now(),
@@ -264,8 +400,12 @@ function handleFormSubmit(e) {
 function resetForm() {
     const form = document.getElementById('guestForm');
     if (form) form.reset();
-    clearMediaSelection();
-    clearAudioRecording();
+    selectedMediaFiles = [];
+    const previewContainer = document.getElementById('mediaPreviewContainer');
+    if (previewContainer) {
+        previewContainer.innerHTML = '';
+        previewContainer.classList.add('hidden');
+    }
     const submitBtn = document.getElementById('submitBtn');
     if (submitBtn) {
         submitBtn.disabled = false;
@@ -273,7 +413,7 @@ function resetForm() {
     }
 }
 
-// --- INSTAGRAM FEED DENGAN SLIDER (NEXT/PREV) ---
+// --- Render Feed & Carousel Slider ---
 function renderFeed() {
     const feedContainer = document.getElementById('igFeedContainer');
     const storiesBar = document.getElementById('storiesHighlightsBar');
@@ -360,7 +500,6 @@ function renderFeed() {
                     </div>
                 ` : ''}
 
-                <!-- Ruangan Komen Ringkas -->
                 <div class="px-4 pt-1 space-y-1">
                     <div id="comments-box-${item.id}" class="space-y-1 max-h-24 overflow-y-auto">${commentsList}</div>
                     <div class="flex space-x-2 pt-1">
@@ -375,8 +514,6 @@ function renderFeed() {
     renderExploreGrid();
 }
 
-// Slider Navigator
-let sliderIndexes = {};
 function slideMedia(itemId, direction, totalSlides) {
     if (!sliderIndexes[itemId]) sliderIndexes[itemId] = 0;
     sliderIndexes[itemId] += direction;
@@ -389,7 +526,6 @@ function slideMedia(itemId, direction, totalSlides) {
     }
 }
 
-// Fungsi Like
 function toggleLike(itemId) {
     const icon = document.getElementById(`like-icon-${itemId}`);
     const countEl = document.getElementById(`like-count-${itemId}`);
@@ -413,7 +549,6 @@ function toggleLike(itemId) {
     });
 }
 
-// Fungsi Komen
 function postComment(itemId) {
     const input = document.getElementById(`comment-input-${itemId}`);
     if (!input || !input.value.trim()) return;

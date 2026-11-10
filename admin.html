@@ -1,163 +1,196 @@
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-<script src="admin.js"></script>
-
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LenteraKita - Super Admin Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- QR Code Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans p-4 md:p-8">
+<body class="wedding-bg min-h-screen text-slate-100 flex flex-col font-sans p-4">
 
-    <!-- LOGIN SCREEN -->
-    <div id="adminLoginScreen" class="fixed inset-0 bg-slate-950 z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-sm w-full space-y-4 shadow-2xl text-center">
-            <div class="w-12 h-12 rounded-2xl bg-amber-500 flex items-center justify-center text-slate-950 text-xl font-bold mx-auto">
-                <i class="fa-solid fa-lock"></i>
-            </div>
-            <div>
-                <h2 class="text-lg font-bold text-amber-300">Super Admin Login</h2>
-                <p class="text-xs text-slate-400 mt-1">Masukkan password (haziqkacak123)</p>
+    <!-- Admin Login Screen -->
+    <div id="adminLoginScreen" class="flex-grow flex items-center justify-center">
+        <div class="glass-card max-w-sm w-full p-6 rounded-2xl space-y-4 shadow-2xl border border-amber-500/30">
+            <div class="text-center space-y-1">
+                <img src="lenteraLogo.png" class="w-12 h-12 mx-auto rounded-xl bg-slate-900 border border-amber-500/30 object-contain">
+                <h2 class="font-serif font-bold text-amber-300 text-lg">Super Admin Portal</h2>
+                <p class="text-xs text-slate-400">Enter password to manage events</p>
             </div>
             <form onsubmit="handleAdminLogin(event)" class="space-y-3">
-                <input type="password" id="loginPassword" required placeholder="Password..." 
-                    class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white focus:border-amber-400 outline-none text-center">
-                <button type="submit" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs transition">
-                    Log Masuk
-                </button>
+                <input type="password" id="loginPassword" required placeholder="Password (haziqkacak123)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-amber-400">
+                <button type="submit" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs">Login Portal</button>
             </form>
-            <a href="index.html?event=walimah-haziq" class="block text-[11px] text-slate-500 hover:text-slate-400">← Kembali ke Halaman Tetamu</a>
+            <div class="text-center"><a href="index.html" class="text-[11px] text-slate-400 hover:text-white underline">&larr; Back to Guest View</a></div>
         </div>
     </div>
 
-    <!-- MAIN ADMIN DASHBOARD -->
-    <div id="adminDashboardContent" class="max-w-6xl mx-auto space-y-6 hidden">
-        <header class="flex justify-between items-center border-b border-slate-800 pb-4">
+    <!-- Admin Dashboard -->
+    <div id="adminDashboardContent" class="max-w-4xl w-full mx-auto space-y-6 hidden">
+        <header class="flex justify-between items-center bg-slate-950/80 backdrop-blur-md p-4 rounded-2xl border border-white/10 shadow-lg">
             <div class="flex items-center space-x-3">
-                <img src="lenteraLogo.png" alt="Logo" class="w-10 h-10 rounded-xl object-contain bg-slate-900 border border-amber-500/30" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3076/3076753.png'">
+                <img src="lenteraLogo.png" class="w-9 h-9 rounded-xl bg-slate-900 border border-amber-500/30 object-contain">
                 <div>
-                    <h1 class="text-xl font-bold">LenteraKita Super Admin</h1>
-                    <p class="text-xs text-slate-400">Pengurusan Majlis & Custom Theme Generator</p>
+                    <h1 class="font-serif font-bold text-amber-300 text-base">LenteraKita Admin</h1>
+                    <p class="text-[10px] text-slate-400" id="eventCountBadge">0 Events</p>
                 </div>
             </div>
-            <button onclick="logoutAdmin()" class="px-3 py-1.5 text-xs bg-red-900/50 hover:bg-red-800 border border-red-500/40 text-red-200 rounded-lg">
-                <i class="fa-solid fa-right-from-bracket mr-1"></i> Log Keluar
-            </button>
+            <div class="flex space-x-2">
+                <a href="index.html" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-medium">Guest View</a>
+                <button onclick="logoutAdmin()" class="px-3 py-1.5 bg-red-900/40 text-red-400 border border-red-500/20 hover:bg-red-900/60 rounded-xl text-xs font-medium">Logout</button>
+            </div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Form Cipta Majlis -->
-            <div class="lg:col-span-1 bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
-                <h2 class="text-base font-bold text-amber-400 flex items-center border-b border-slate-800 pb-2">
-                    <i class="fa-solid fa-plus-circle mr-2"></i> Cipta Majlis Baru
-                </h2>
-
-                <form id="createEventForm" onsubmit="handleCreateEvent(event)" class="space-y-3 text-xs">
+        <!-- Create Event Form -->
+        <section class="glass-card p-5 rounded-2xl space-y-4 shadow-xl border border-white/10">
+            <h3 class="font-serif font-bold text-amber-300 text-sm"><i class="fa-solid fa-plus-circle mr-1"></i> Register New Event</h3>
+            <form id="createEventForm" onsubmit="handleCreateEvent(event)" class="space-y-3 text-xs">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                        <label class="block text-slate-300 font-medium mb-1">ID Event (URL Slug) *</label>
-                        <input type="text" id="eventId" required placeholder="cth: walimah-haziq" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white font-mono outline-none">
+                        <label class="block text-slate-300 mb-1">Event ID (URL slug) *</label>
+                        <input type="text" id="eventId" required placeholder="e.g. walimah-haziq" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
                     </div>
-
                     <div>
-                        <label class="block text-slate-300 font-medium mb-1">Jenis Majlis</label>
+                        <label class="block text-slate-300 mb-1">Event Type</label>
                         <select id="eventType" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
-                            <option value="Perkahwinan">💍 Walimatulurus / Perkahwinan</option>
-                            <option value="Pertunangan">💍 Majlis Pertunangan</option>
-                            <option value="Hari Lahir">🎂 Sambutan Hari Lahir</option>
-                            <option value="Annual Dinner">🎉 Annual Dinner / Korporat</option>
-                            <option value="Aqiqah & Kesyukuran">👶 Aqiqah & Kesyukuran</option>
-                            <option value="Reunion">🤝 Reunion & Gathering</option>
+                            <option value="Perkahwinan">Wedding / Perkahwinan</option>
+                            <option value="Pertunangan">Engagement / Pertunangan</option>
+                            <option value="Birthday">Birthday / Hari Jadi</option>
+                            <option value="Corporate">Corporate Event</option>
                         </select>
                     </div>
-
                     <div>
-                        <label class="block text-slate-300 font-medium mb-1">Tajuk Pasangan / Majlis *</label>
-                        <input type="text" id="eventTitle" required placeholder="cth: Haziq & Nisa" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+                        <label class="block text-slate-300 mb-1">Groom & Bride / Title *</label>
+                        <input type="text" id="eventTitle" required placeholder="e.g. Haziq & Aisyah" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
                     </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-slate-300 mb-1">Date & Time</label>
+                        <input type="text" id="eventDate" placeholder="21 October 2030" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-slate-300 mb-1">Venue</label>
+                        <input type="text" id="eventVenue" placeholder="Grand Ballroom KL" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-slate-300 mb-1">Welcome Message</label>
+                    <textarea id="eventWelcome" rows="2" placeholder="Selamat datang ke majlis kami..." class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white resize-none"></textarea>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-slate-300 mb-1">Theme Background Color</label>
+                        <input type="color" id="themeBg" value="#1A0307" class="w-full h-9 bg-slate-950 border border-slate-700 rounded-lg p-1 cursor-pointer">
+                    </div>
+                    <div>
+                        <label class="block text-slate-300 mb-1">Accent Gold Color</label>
+                        <input type="color" id="themeAccent" value="#E5C158" class="w-full h-9 bg-slate-950 border border-slate-700 rounded-lg p-1 cursor-pointer">
+                    </div>
+                </div>
+                <div class="space-y-2 pt-2 border-t border-slate-800">
+                    <label class="block font-bold text-amber-300">🎵 Browse Music & Background Files</label>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Background Music (MP3)</label>
+                        <input type="file" id="audioFilePicker" accept="audio/*" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-1 text-white file:bg-amber-500 file:text-slate-950 file:border-0 file:rounded file:px-2 file:text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Custom Background Image</label>
+                        <input type="file" id="bgFilePicker" accept="image/*" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-1 text-white file:bg-amber-500 file:text-slate-950 file:border-0 file:rounded file:px-2 file:text-xs">
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-gradient-to-r from-amber-600 to-yellow-500 text-slate-950 font-bold rounded-xl shadow-lg">Create Event</button>
+            </form>
+        </section>
 
+        <!-- Active Events List -->
+        <section class="space-y-3">
+            <h3 class="font-serif font-bold text-amber-300 text-sm">Active Events</h3>
+            <div id="eventListGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+        </section>
+    </div>
+
+    <!-- QR Modal -->
+    <div id="qrModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card max-w-xs w-full rounded-2xl p-5 text-center space-y-4 shadow-2xl relative border border-white/20">
+            <button onclick="closeQrModal()" class="absolute top-3 right-3 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            <h3 id="qrModalTitle" class="font-serif font-bold text-amber-300 text-sm">Event QR Code</h3>
+            <div id="qrcode" class="bg-white p-3 rounded-xl inline-block mx-auto flex justify-center"></div>
+            <p id="qrModalUrl" class="text-[10px] text-slate-400 break-all select-all"></p>
+        </div>
+    </div>
+
+    <!-- Stats Modal -->
+    <div id="statModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card max-w-sm w-full rounded-2xl p-5 space-y-4 shadow-2xl relative border border-white/20 text-xs">
+            <div class="flex justify-between items-center border-b border-white/10 pb-2">
+                <h3 class="font-serif font-bold text-amber-300 text-sm">Event Statistics</h3>
+                <button onclick="closeStatModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="statModalBody" class="space-y-2"></div>
+        </div>
+    </div>
+
+    <!-- Manage / Edit & Delete Memories Modal -->
+    <div id="adminManageModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card max-w-2xl w-full rounded-2xl p-5 border border-white/20 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto text-xs">
+            <div class="flex justify-between items-center border-b border-white/10 pb-3">
+                <h3 id="manageModalTitle" class="font-serif font-bold text-amber-300 text-sm">Manage Event</h3>
+                <button onclick="closeManageModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <div class="flex space-x-2 border-b border-white/10 pb-2">
+                <button onclick="switchAdminTab('details')" id="admin-tab-btn-details" class="px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold">Edit Details & Music</button>
+                <button onclick="switchAdminTab('memories')" id="admin-tab-btn-memories" class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300">View & Delete Photos</button>
+            </div>
+
+            <div id="admin-tab-details" class="space-y-3">
+                <form id="editEventForm" onsubmit="handleUpdateEvent(event)" class="space-y-3">
+                    <input type="hidden" id="editEventId">
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-slate-300 font-medium mb-1">Tarikh</label>
-                            <input type="text" id="eventDate" placeholder="24 Okt 2026" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+                            <label class="block text-slate-300 mb-1">Event Title / Groom & Bride</label>
+                            <input type="text" id="editEventTitle" required class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
                         </div>
                         <div>
-                            <label class="block text-slate-300 font-medium mb-1">Lokasi / Venue</label>
-                            <input type="text" id="eventVenue" placeholder="Dewan Seri Endon" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+                            <label class="block text-slate-300 mb-1">Date & Time</label>
+                            <input type="text" id="editEventDate" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
                         </div>
                     </div>
-
                     <div>
-                        <label class="block text-slate-300 font-medium mb-1">Mesej Aluan Tetamu</label>
-                        <textarea id="eventWelcome" rows="2" placeholder="Selamat datang ke majlis..." class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white resize-none"></textarea>
+                        <label class="block text-slate-300 mb-1">Venue</label>
+                        <input type="text" id="editEventVenue" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
                     </div>
-
-                    <!-- Audio & Custom BG -->
-                    <!-- Gantikan bahagian Audio & Custom BG lama dalam admin.html dengan kod ini -->
-                    <div class="space-y-3 pt-3 border-t border-slate-800 text-xs">
-                        <label class="block font-bold text-amber-300">🎵 Muzik & Visual Khas (Browse File)</label>
-                        
+                    <div>
+                        <label class="block text-slate-300 mb-1">Welcome Message</label>
+                        <textarea id="editEventWelcome" rows="2" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white resize-none"></textarea>
+                    </div>
+                    <div class="border-t border-slate-800 pt-2 space-y-2">
+                        <label class="block font-bold text-amber-300">🎵 Update Music & Background File</label>
                         <div>
-                            <label class="block text-slate-300 mb-1">Pilih Fail Lagu Latar (MP3)</label>
-                            <input type="file" id="audioFilePicker" accept="audio/mp3,audio/*" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white file:mr-4 file:py-1 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-amber-500 file:text-slate-955 hover:file:bg-amber-400 cursor-pointer">
+                            <label class="block text-slate-400 mb-1">New Background Music (MP3)</label>
+                            <input type="file" id="editAudioFile" accept="audio/*" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-1.5 text-white file:bg-amber-500 file:text-slate-950 file:border-0 file:rounded file:px-2 file:text-xs">
                         </div>
-
                         <div>
-                            <label class="block text-slate-300 mb-1">Pilih Fail Custom Background (Gambar)</label>
-                            <input type="file" id="bgFilePicker" accept="image/*" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white file:mr-4 file:py-1 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-amber-500 file:text-slate-955 hover:file:bg-amber-400 cursor-pointer">
+                            <label class="block text-slate-400 mb-1">New Custom Background Image</label>
+                            <input type="file" id="editBgFile" accept="image/*" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-1.5 text-white file:bg-amber-500 file:text-slate-950 file:border-0 file:rounded file:px-2 file:text-xs">
                         </div>
                     </div>
-
-                    <!-- Theme Customizer -->
-                    <div class="p-3 bg-slate-950/80 rounded-xl border border-slate-800 space-y-2">
-                        <label class="block font-bold text-amber-300">🎨 Dynamic Theme</label>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block text-[10px] text-slate-400 mb-1">Warna Latar</label>
-                                <input type="color" id="themeBg" value="#1A0307" class="w-full h-8 bg-transparent cursor-pointer rounded">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] text-slate-400 mb-1">Warna Accent</label>
-                                <input type="color" id="themeAccent" value="#E5C158" class="w-full h-8 bg-transparent cursor-pointer rounded">
-                            </div>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs transition">
-                        <i class="fa-solid fa-floppy-disk mr-1"></i> Simpan & Publish Majlis
-                    </button>
+                    <button type="submit" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg">Save Changes</button>
                 </form>
             </div>
 
-            <!-- Senarai Majlis Aktif -->
-            <div class="lg:col-span-2 space-y-4">
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-                    <h2 class="text-base font-bold text-slate-200 border-b border-slate-800 pb-3 mb-4 flex justify-between items-center">
-                        <span><i class="fa-solid fa-list-check mr-2 text-amber-400"></i> Senarai Majlis Aktif</span>
-                        <span id="eventCountBadge" class="text-xs bg-slate-800 px-2.5 py-1 rounded-full text-slate-400">0 Majlis</span>
-                    </h2>
-                    <div id="eventListGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-                </div>
+            <div id="admin-tab-memories" class="space-y-3 hidden">
+                <p class="text-slate-400">List of all guest uploads. Click delete to remove inappropriate photos instantly.</p>
+                <div id="adminMemoriesGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-[50vh] overflow-y-auto p-1"></div>
             </div>
         </div>
     </div>
 
-    <!-- QR Code Modal -->
-    <div id="qrModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-sm w-full text-center space-y-4">
-            <h3 class="font-bold text-amber-300" id="qrModalTitle">QR Code Meja Tetamu</h3>
-            <div id="qrcode" class="flex justify-center p-4 bg-white rounded-xl shadow-inner mx-auto w-fit"></div>
-            <p class="text-xs text-slate-400 break-all" id="qrModalUrl"></p>
-            <button onclick="closeQrModal()" class="w-full py-2 bg-slate-800 text-slate-300 rounded-xl text-xs hover:bg-slate-700">Tutup</button>
-        </div>
-    </div>
-
-    <!-- Statistik Modal -->
-    <div id="statModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

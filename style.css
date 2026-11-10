@@ -332,3 +332,10 @@
 .memory-tile:hover img {
     transform: scale(1.05);
 }
+
+/* Aesthetic & Dazz Cam Live Filters */
+.filter-normal { filter: none; }
+.filter-vintage { filter: sepia(0.5) contrast(1.2) brightness(0.9) saturate(0.8); }
+.filter-warm { filter: sepia(0.3) saturate(1.4) hue-rotate(-10deg) brightness(1.05); }
+.filter-mono { filter: grayscale(100%) contrast(1.3); }
+.filter-cyber { filter: hue-rotate(90deg) saturate(2) contrast(1.2); }

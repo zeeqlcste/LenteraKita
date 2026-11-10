@@ -44,14 +44,20 @@
                 <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <nav class="space-y-2 text-sm">
-                <button onclick="switchTab('form'); toggleSidebar();" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-white/10 text-slate-200 transition text-left">
-                    <i class="fa-solid fa-pen-nib text-amber-400 w-5"></i><span>Write Wish & Upload</span>
-                </button>
                 <button onclick="switchTab('feed'); toggleSidebar();" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-white/10 text-slate-200 transition text-left">
-                    <i class="fa-solid fa-images text-amber-400 w-5"></i><span>Memory Feed</span>
+                    <i class="fa-solid fa-house text-amber-400 w-5"></i><span>Home Feed</span>
+                </button>
+                <button onclick="switchTab('explore'); toggleSidebar();" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-white/10 text-slate-200 transition text-left">
+                    <i class="fa-solid fa-images text-amber-400 w-5"></i><span>Album Grid</span>
+                </button>
+                <button onclick="openCameraModal(); toggleSidebar();" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-white/10 text-slate-200 transition text-left">
+                    <i class="fa-solid fa-camera text-amber-400 w-5"></i><span>Capture Studio</span>
+                </button>
+                <button onclick="switchTab('voice'); toggleSidebar();" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-white/10 text-slate-200 transition text-left">
+                    <i class="fa-solid fa-microphone text-amber-400 w-5"></i><span>Voice Notes</span>
                 </button>
                 <button onclick="switchTab('tv'); toggleSidebar();" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-white/10 text-slate-200 transition text-left">
-                    <i class="fa-solid fa-tv text-amber-400 w-5"></i><span>TV Mode (Slideshow)</span>
+                    <i class="fa-solid fa-tv text-amber-400 w-5"></i><span>TV Slideshow</span>
                 </button>
             </nav>
         </div>
@@ -60,23 +66,23 @@
         </div>
     </aside>
 
-    <!-- Main Container (Mobile Focused) -->
+    <!-- Main Container -->
     <main class="flex-grow max-w-md w-full mx-auto p-2 md:p-3 space-y-4 relative z-10">
 
-        <!-- 1. STORIES / HIGHLIGHTS CIRCLES ATAS -->
+        <!-- Stories Highlights -->
         <div class="stories-container bg-slate-950/50 p-3 rounded-2xl border border-white/10 shadow-lg">
-            <div class="flex flex-col items-center space-y-1 cursor-pointer flex-shrink-0" onclick="switchTab('form')">
+            <div class="flex flex-col items-center space-x-1 cursor-pointer flex-shrink-0" onclick="openCameraModal()">
                 <div class="story-ring">
                     <div class="story-inner bg-slate-900 flex items-center justify-center text-amber-300 text-lg">
-                        <i class="fa-solid fa-plus"></i>
+                        <i class="fa-solid fa-camera"></i>
                     </div>
                 </div>
-                <span class="text-[10px] text-slate-300 truncate w-16 text-center">Add Story</span>
+                <span class="text-[10px] text-slate-300 truncate w-16 text-center">Capture</span>
             </div>
             <div id="storiesHighlightsBar" class="flex space-x-3"></div>
         </div>
 
-        <!-- WELCOME CARD -->
+        <!-- Welcome Card -->
         <div id="welcomeCardContainer" class="glass-card welcome-card-bg rounded-2xl p-5 text-center shadow-xl relative overflow-hidden">
             <div class="welcome-card-content space-y-2">
                 <div class="inline-block px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px] font-semibold uppercase tracking-wider">
@@ -88,15 +94,15 @@
             </div>
         </div>
 
-        <!-- 2. TAB FEED (INSTAGRAM VERTICAL POSTS) -->
+        <!-- Tab Feed -->
         <div id="tab-feed" class="space-y-4">
             <div id="igFeedContainer" class="space-y-4"></div>
         </div>
 
-        <!-- 3. TAB EXPLORE (GRID VIEW) -->
+        <!-- Tab Explore (Album Grid) -->
         <div id="tab-explore" class="space-y-3 hidden">
             <div class="flex justify-between items-center bg-slate-950/80 p-2 rounded-xl border border-white/10 text-xs">
-                <span class="text-slate-400 px-2 font-medium">Explore Gallery</span>
+                <span class="text-slate-400 px-2 font-medium">Event Album Gallery</span>
                 <div class="flex space-x-1">
                     <button onclick="filterFeed('all')" id="filter-all" class="px-2.5 py-1 rounded-lg font-medium bg-amber-500 text-slate-950 text-xs">All</button>
                     <button onclick="filterFeed('photo')" id="filter-photo" class="px-2.5 py-1 rounded-lg font-medium text-slate-300 text-xs">Photos</button>
@@ -106,10 +112,10 @@
             <div id="feedGrid" class="memory-grid rounded-2xl overflow-hidden border border-white/10"></div>
         </div>
 
-        <!-- 4. TAB FORM (UPLOAD) -->
-        <div id="tab-form" class="space-y-4 hidden">
+        <!-- Tab Wishes & Form (Keluar Selepas Tekan 'Next' dari Kamera Studio) -->
+        <div id="tab-capture" class="space-y-4 hidden">
             <div class="flex justify-between items-center bg-slate-950/80 px-4 py-3 rounded-xl border border-white/10">
-                <h3 class="font-serif font-bold text-amber-300 text-sm">Send New Memory</h3>
+                <h3 class="font-serif font-bold text-amber-300 text-sm">Add Wishes & Submit</h3>
                 <button onclick="switchTab('feed')" class="text-xs text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i> Close</button>
             </div>
             
@@ -136,45 +142,81 @@
                 </div>
 
                 <div>
-                    <label class="block text-amber-200/80 mb-1">Upload Multiple Photos / Videos</label>
-                    <div class="border-2 border-dashed border-white/15 rounded-xl p-3 text-center cursor-pointer bg-slate-900/40" onclick="document.getElementById('mediaInput').click()">
-                        <input type="file" id="mediaInput" accept="image/*,video/*" multiple class="hidden" onchange="handleFileSelect(event)">
-                        <div id="uploadPlaceholder"><i class="fa-solid fa-images text-lg text-amber-400 mb-1"></i><p class="text-[11px] text-slate-300">Click to choose files</p></div>
-                        <div id="mediaPreviewContainer" class="hidden grid grid-cols-3 gap-1 pt-2"></div>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-amber-200/80 mb-1">Record Voice Note</label>
-                    <div class="bg-slate-900/80 border border-white/15 rounded-xl p-3 flex flex-col items-center justify-center space-y-2">
-                        <div class="flex items-center space-x-3 w-full justify-center">
-                            <button type="button" id="recordBtn" onclick="toggleRecording()" class="w-9 h-9 rounded-full bg-red-600 text-white flex items-center justify-center shadow-lg"><i class="fa-solid fa-microphone"></i></button>
-                            <div class="text-left">
-                                <p id="recordStatus" class="text-[11px] text-amber-200/80">Press mic to record</p>
-                                <p id="recordTimer" class="text-[10px] font-mono text-amber-400 hidden">00:00 / 00:30</p>
-                            </div>
-                        </div>
-                        <div id="audioPreviewContainer" class="hidden w-full pt-1">
-                            <audio id="audioPreview" controls class="w-full h-7 rounded-lg"></audio>
-                            <button type="button" onclick="clearAudioRecording()" class="text-[10px] text-red-400 hover:underline mt-1 block mx-auto">Delete & Re-record</button>
-                        </div>
-                    </div>
+                    <label class="block text-amber-200/80 mb-1">Captured Photos Preview</label>
+                    <div id="mediaPreviewContainer" class="grid grid-cols-3 gap-2 pt-2 border-t border-white/10"></div>
                 </div>
 
                 <button type="submit" id="submitBtn" class="w-full py-2.5 bg-gradient-to-r from-amber-600 to-yellow-500 text-slate-950 font-bold rounded-xl shadow-lg">Submit Memory</button>
             </form>
         </div>
+
+        <!-- Tab Voice Vault -->
+        <div id="tab-voice" class="space-y-4 hidden">
+            <div class="flex justify-between items-center bg-slate-950/80 px-4 py-3 rounded-xl border border-white/10">
+                <h3 class="font-serif font-bold text-amber-300 text-sm">Voice Notes Vault</h3>
+                <span class="text-[10px] text-slate-400">Audio Wishes</span>
+            </div>
+
+            <div class="glass-card rounded-2xl p-4 shadow-xl space-y-3 text-xs">
+                <label class="block font-bold text-amber-200">Record Your Voice Message</label>
+                <div class="bg-slate-900/80 border border-white/15 rounded-xl p-4 flex flex-col items-center justify-center space-y-3">
+                    <button type="button" id="recordBtn" onclick="toggleRecording()" class="w-12 h-12 rounded-full bg-red-600 text-white flex items-center justify-center shadow-lg text-lg"><i class="fa-solid fa-microphone"></i></button>
+                    <div class="text-center">
+                        <p id="recordStatus" class="text-xs text-amber-200/80">Press microphone to record (Max 30s)</p>
+                        <p id="recordTimer" class="text-[11px] font-mono text-amber-400 hidden">00:00 / 00:30</p>
+                    </div>
+                    <div id="audioPreviewContainer" class="hidden w-full pt-2 space-y-2">
+                        <audio id="audioPreview" controls class="w-full h-8 rounded-lg"></audio>
+                        <div class="flex space-x-2">
+                            <input type="text" id="voiceSenderName" placeholder="Your Name" class="flex-grow bg-slate-950 border border-white/15 rounded-lg px-2.5 py-1.5 text-white outline-none">
+                            <button type="button" onclick="submitVoiceNote()" class="px-3 py-1.5 bg-amber-500 text-slate-950 font-bold rounded-lg">Send Voice</button>
+                        </div>
+                        <button type="button" onclick="clearAudioRecording()" class="text-[10px] text-red-400 hover:underline block mx-auto">Delete & Re-record</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="voiceNotesList" class="space-y-3"></div>
+        </div>
     </main>
 
-    <!-- DYNAMIC INSTAGRAM BOTTOM NAVIGATION BAR -->
+    <!-- Fullscreen Camera Studio Modal (Dazz Cam Filters) -->
+    <div id="cameraModal" class="fixed inset-0 bg-black z-50 hidden flex flex-col justify-between overflow-hidden">
+        <div class="absolute top-0 left-0 right-0 z-30 p-4 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent">
+            <button onclick="closeCameraModal()" class="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center text-lg"><i class="fa-solid fa-xmark"></i></button>
+            <span id="capturedCountBadge" class="px-3 py-1 bg-amber-500/80 text-slate-950 font-bold rounded-full text-xs">0 Photos</span>
+            <button onclick="proceedToWishesStep()" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-bold rounded-full text-xs shadow-lg flex items-center space-x-1.5"><span>Next (✓)</span> <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+        <div class="relative w-full h-full flex items-center justify-center bg-black">
+            <video id="cameraVideo" autoplay playsinline class="w-full h-full object-cover filter-normal transition-all duration-300"></video>
+            <canvas id="cameraCanvas" class="hidden"></canvas>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 z-30 pb-6 pt-10 px-4 bg-gradient-to-t from-black/90 via-black/60 to-transparent space-y-4">
+            <div class="flex space-x-3 overflow-x-auto scrollbar-none pb-2 justify-center">
+                <button onclick="setCameraFilter('filter-normal', this)" class="filter-chip px-3 py-1.5 rounded-full bg-amber-500 text-slate-950 font-bold text-[11px] flex-shrink-0">Normal</button>
+                <button onclick="setCameraFilter('filter-vintage', this)" class="filter-chip px-3 py-1.5 rounded-full bg-white/20 text-white font-medium text-[11px] flex-shrink-0">Vintage 98</button>
+                <button onclick="setCameraFilter('filter-warm', this)" class="filter-chip px-3 py-1.5 rounded-full bg-white/20 text-white font-medium text-[11px] flex-shrink-0">Golden Warm</button>
+                <button onclick="setCameraFilter('filter-mono', this)" class="filter-chip px-3 py-1.5 rounded-full bg-white/20 text-white font-medium text-[11px] flex-shrink-0">B&W Noir</button>
+                <button onclick="setCameraFilter('filter-cyber', this)" class="filter-chip px-3 py-1.5 rounded-full bg-white/20 text-white font-medium text-[11px] flex-shrink-0">Cyber Glitch</button>
+            </div>
+            <div class="flex items-center justify-around max-w-xs mx-auto">
+                <div id="thumbPreviewBox" class="w-12 h-12 rounded-xl bg-slate-800 border-2 border-white/30 overflow-hidden flex items-center justify-center"><i class="fa-solid fa-image text-slate-400 text-sm"></i></div>
+                <button type="button" onclick="capturePhotoFromCamera()" class="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center p-1 bg-transparent active:scale-95 transition"><div class="w-full h-full rounded-full bg-white"></div></button>
+                <button type="button" onclick="switchCameraFacing()" class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center text-sm"><i class="fa-solid fa-rotate"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Bar (5 Icons) - PERHATIKAN BUTANG TENGAH PANGGIL openCameraModal() -->
     <nav class="ig-bottom-nav">
-        <button onclick="switchTab('feed')" id="nav-feed" class="ig-nav-item active" title="Feed"><i class="fa-solid fa-house"></i></button>
-        <button onclick="switchTab('explore')" id="nav-explore" class="ig-nav-item" title="Explore Grid"><i class="fa-solid fa-compass"></i></button>
-        <button onclick="switchTab('form')" id="nav-form" class="ig-nav-add" title="Add Memory"><i class="fa-solid fa-plus"></i></button>
-        <button onclick="switchTab('tv')" id="nav-tv" class="ig-nav-item" title="TV Slideshow"><i class="fa-solid fa-tv"></i></button>
+        <button onclick="switchTab('feed')" id="nav-feed" class="ig-nav-item active" title="Home Feed"><i class="fa-solid fa-house"></i></button>
+        <button onclick="switchTab('explore')" id="nav-explore" class="ig-nav-item" title="Album Grid"><i class="fa-solid fa-images"></i></button>
+        <button onclick="openCameraModal()" id="nav-capture" class="ig-nav-add" title="Capture"><i class="fa-solid fa-camera"></i></button>
+        <button onclick="switchTab('voice')" id="nav-voice" class="ig-nav-item" title="Voice Notes"><i class="fa-solid fa-microphone"></i></button>
+        <button onclick="openProfileModal()" id="nav-profile" class="ig-nav-item" title="Event Info"><i class="fa-solid fa-user"></i></button>
     </nav>
 
-    <!-- MODAL DETAIL -->
+    <!-- Detail Modal -->
     <div id="detailModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
         <div class="glass-card max-w-sm w-full rounded-2xl p-4 relative space-y-3">
             <button onclick="closeDetailModal()" class="absolute top-3 right-3 text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -182,7 +224,7 @@
         </div>
     </div>
 
-    <!-- MODAL TV -->
+    <!-- TV Slideshow Modal -->
     <div id="tvModal" class="fixed inset-0 bg-slate-950 z-50 hidden flex flex-col justify-between p-6">
         <div class="flex justify-between items-center border-b border-white/10 pb-4">
             <h2 class="text-xl font-serif font-bold text-amber-300">TV Mode (Live Slideshow)</h2>

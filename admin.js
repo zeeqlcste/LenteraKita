@@ -1,10 +1,10 @@
-// --- 1. FIREBASE CONFIGURATION ---
 const firebaseConfig = {
     databaseURL: "https://lenterakita-default-rtdb.asia-southeast1.firebasedatabase.app/"
 };
 
 let db = null;
 let eventsRef = null;
+let currentManagingEventId = null;
 
 try {
     firebase.initializeApp(firebaseConfig);
@@ -39,7 +39,7 @@ function handleAdminLogin(e) {
         sessionStorage.setItem('lenterakita_admin_logged', 'true');
         showAdminDashboard();
     } else {
-        alert("Password salah! (Password: haziqkacak123)");
+        alert("Wrong password! (Password: haziqkacak123)");
         passInput.value = '';
     }
 }
@@ -65,157 +65,9 @@ function handleCreateEvent(e) {
     if (!eventIdInput) return;
 
     const eventId = eventIdInput.value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-');
-    const eventData = {
-        config: {
-            eventId: eventId,
-            eventType: document.getElementById('eventType').value,
-            title: "LenteraKita",
-            eventTitle: document.getElementById('eventTitle').value,
-            date: document.getElementById('eventDate').value,
-            venue: document.getElementById('eventVenue').value,
-            welcomeMsg: document.getElementById('eventWelcome').value,
-            themeBg: document.getElementById('themeBg').value,
-            themeAccent: document.getElementById('themeAccent').value,
-            audioUrl: document.getElementById('eventAudioUrl').value.trim(),
-            customBg: document.getElementById('eventCustomBg').value.trim(),
-            createdAt: Date.now()
-        }
-    };
-
-    eventsRef.child(eventId).update(eventData).then(() => {
-        alert(`Majlis '${eventId}' berjaya disimpan!`);
-        const form = document.getElementById('createEventForm');
-        if (form) form.reset();
-    });
-}
-
-function loadAdminEventList() {
-    if (!eventsRef) return;
-    eventsRef.on('value', (snapshot) => {
-        const allEvents = snapshot.val();
-        const container = document.getElementById('eventListGrid');
-        const badge = document.getElementById('eventCountBadge');
-        if (!container) return;
-
-        if (!allEvents) {
-            container.innerHTML = `<p class="text-xs text-slate-500 col-span-2">Tiada majlis didaftarkan.</p>`;
-            if (badge) badge.innerText = `0 Majlis`;
-            return;
-        }
-
-        const eventKeys = Object.keys(allEvents);
-        if (badge) badge.innerText = `${eventKeys.length} Majlis`;
-
-        container.innerHTML = eventKeys.map(key => {
-            const ev = allEvents[key].config || {};
-            const guestUrl = `${window.location.origin}/index.html?event=${key}`;
-            return `
-                <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl space-y-3">
-                    <div>
-                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">${ev.eventType || 'Majlis'}</span>
-                        <h3 class="font-bold text-sm text-slate-100 mt-1">${escapeHtml(ev.eventTitle || key)}</h3>
-                        <p class="text-[11px] text-slate-400">${escapeHtml(ev.date || '')}</p>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2 pt-1">
-                        <button onclick="showQrCode('${guestUrl}', '${escapeHtml(ev.eventTitle || key)}')" class="py-1.5 bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border border-amber-500/30 rounded-lg text-xs font-medium">
-                            <i class="fa-solid fa-qrcode mr-1"></i> QR Code
-                        </button>
-                        <button onclick="showEventStats('${key}')" class="py-1.5 bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 border border-cyan-500/30 rounded-lg text-xs font-medium">
-                            <i class="fa-solid fa-chart-bar mr-1"></i> Statistik
-                        </button>
-                    </div>
-                    <div class="flex space-x-2 pt-1">
-                        <a href="${guestUrl}" target="_blank" class="flex-1 py-1.5 text-center bg-slate-800 text-slate-200 hover:bg-slate-700 rounded-lg text-xs font-medium">Preview</a>
-                        <button onclick="deleteEvent('${key}')" class="px-3 py-1.5 bg-red-900/40 text-red-400 border border-red-500/20 rounded-lg text-xs"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    });
-}
-
-function showQrCode(url, title) {
-    const qrModal = document.getElementById('qrModal');
-    const qrModalTitle = document.getElementById('qrModalTitle');
-    const qrModalUrl = document.getElementById('qrModalUrl');
-    if (qrModalTitle) qrModalTitle.innerText = title;
-    if (qrModalUrl) qrModalUrl.innerText = url;
-    
-    const qrContainer = document.getElementById('qrcode');
-    if (qrContainer) {
-        qrContainer.innerHTML = '';
-        new QRCode(qrContainer, { text: url, width: 160, height: 160 });
-    }
-    if (qrModal) qrModal.classList.remove('hidden');
-}
-
-function closeQrModal() {
-    const qrModal = document.getElementById('qrModal');
-    if (qrModal) qrModal.classList.add('hidden');
-}
-
-function showEventStats(eventId) {
-    eventsRef.child(eventId).once('value', (snapshot) => {
-        const data = snapshot.val();
-        if (!data || !data.memories) {
-            alert("Belum ada sebarang data kenangan untuk majlis ini.");
-            return;
-        }
-        const memories = Object.values(data.memories);
-        let totalWishes = memories.filter(m => m.wish && m.wish.length > 0).length;
-        let totalPhotos = 0;
-        let totalVoices = memories.filter(m => m.audio !== null).length;
-
-        memories.forEach(m => {
-            if (m.media && Array.isArray(m.media)) totalPhotos += m.media.length;
-        });
-
-        const modalBody = document.getElementById('statModalBody');
-        if (modalBody) {
-            modalBody.innerHTML = `
-                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
-                    <p>📌 <b>Jumlah Keseluruhan Hantaran:</b> ${memories.length}</p>
-                    <p>💬 <b>Jumlah Ucapan (Wish):</b> ${totalWishes}</p>
-                    <p>🖼️ <b>Jumlah Gambar/Video:</b> ${totalPhotos}</p>
-                    <p>🎙️ <b>Jumlah Voice Note:</b> ${totalVoices}</p>
-                </div>
-            `;
-        }
-        const statModal = document.getElementById('statModal');
-        if (statModal) statModal.classList.remove('hidden');
-    });
-}
-
-function closeStatModal() {
-    const statModal = document.getElementById('statModal');
-    if (statModal) statModal.classList.add('hidden');
-}
-
-function deleteEvent(eventId) {
-    if (confirm(`Padam majlis '${eventId}' secara kekal?`)) {
-        eventsRef.child(eventId).remove().then(() => alert("Dipadam."));
-    }
-}
-
-function escapeHtml(text) {
-    if (!text) return '';
-    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-}
-
-function handleCreateEvent(e) {
-    e.preventDefault();
-    if (!eventsRef) return;
-
-    const eventIdInput = document.getElementById('eventId');
-    if (!eventIdInput) return;
-
-    const eventId = eventIdInput.value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-');
-    
-    // Ambil fail yang di-browse oleh admin
     const audioFile = document.getElementById('audioFilePicker').files[0];
     const bgFile = document.getElementById('bgFilePicker').files[0];
 
-    // Fungsi pembantu untuk tukar fail kepada Base64
     const readFileAsDataURL = (file) => {
         return new Promise((resolve) => {
             if (!file) return resolve(null);
@@ -225,7 +77,6 @@ function handleCreateEvent(e) {
         });
     };
 
-    // Jalankan proses pembacaan fail serentak
     Promise.all([
         readFileAsDataURL(audioFile),
         readFileAsDataURL(bgFile)
@@ -242,16 +93,265 @@ function handleCreateEvent(e) {
                 welcomeMsg: document.getElementById('eventWelcome').value,
                 themeBg: document.getElementById('themeBg').value,
                 themeAccent: document.getElementById('themeAccent').value,
-                audioUrl: audioBase64 || "", // Simpan fail audio dalam bentuk data string
-                customBg: bgBase64 || "",     // Simpan fail gambar background dalam bentuk data string
+                audioUrl: audioBase64 || "",
+                customBg: bgBase64 || "",
                 createdAt: Date.now()
             }
         };
 
         eventsRef.child(eventId).update(eventData).then(() => {
-            alert(`Majlis '${eventId}' berjaya disimpan dengan fail pilihan anda!`);
+            alert(`Event '${eventId}' created successfully!`);
             const form = document.getElementById('createEventForm');
             if (form) form.reset();
         });
     });
-}  
+}
+
+function loadAdminEventList() {
+    if (!eventsRef) return;
+    eventsRef.on('value', (snapshot) => {
+        const allEvents = snapshot.val();
+        const container = document.getElementById('eventListGrid');
+        const badge = document.getElementById('eventCountBadge');
+        if (!container) return;
+
+        if (!allEvents) {
+            container.innerHTML = `<p class="text-xs text-slate-500 col-span-2">No events registered yet.</p>`;
+            if (badge) badge.innerText = `0 Events`;
+            return;
+        }
+
+        const eventKeys = Object.keys(allEvents);
+        if (badge) badge.innerText = `${eventKeys.length} Events`;
+
+        container.innerHTML = eventKeys.map(key => {
+            const ev = allEvents[key].config || {};
+            const guestUrl = `${window.location.origin}/index.html?event=${key}`;
+            return `
+                <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl space-y-3">
+                    <div>
+                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">${ev.eventType || 'Event'}</span>
+                        <h3 class="font-bold text-sm text-slate-100 mt-1">${escapeHtml(ev.eventTitle || key)}</h3>
+                        <p class="text-[11px] text-slate-400">${escapeHtml(ev.date || '')}</p>
+                    </div>
+                    <div class="grid grid-cols-3 gap-1.5 pt-1">
+                        <button onclick="showQrCode('${guestUrl}', '${escapeHtml(ev.eventTitle || key)}')" class="py-1.5 bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border border-amber-500/30 rounded-lg text-xs font-medium">
+                            <i class="fa-solid fa-qrcode"></i> QR
+                        </button>
+                        <button onclick="openManageModal('${key}')" class="py-1.5 bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 border border-cyan-500/30 rounded-lg text-xs font-medium">
+                            <i class="fa-solid fa-pen-to-square"></i> Edit
+                        </button>
+                        <button onclick="showEventStats('${key}')" class="py-1.5 bg-purple-500/20 text-purple-300 hover:bg-purple-500/30 border border-purple-500/30 rounded-lg text-xs font-medium">
+                            <i class="fa-solid fa-chart-bar"></i> Stats
+                        </button>
+                    </div>
+                    <div class="flex space-x-2 pt-1">
+                        <a href="${guestUrl}" target="_blank" class="flex-1 py-1.5 text-center bg-slate-800 text-slate-200 hover:bg-slate-700 rounded-lg text-xs font-medium">Preview Guest View</a>
+                        <button onclick="deleteEvent('${key}')" class="px-3 py-1.5 bg-red-900/40 text-red-400 border border-red-500/20 rounded-lg text-xs"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    });
+}
+
+function openManageModal(eventId) {
+    currentManagingEventId = eventId;
+    const modal = document.getElementById('adminManageModal');
+    if (!modal) return;
+
+    eventsRef.child(eventId).once('value', snapshot => {
+        const data = snapshot.val();
+        if (!data || !data.config) return;
+
+        const cfg = data.config;
+        document.getElementById('manageModalTitle').innerText = `Manage: ${cfg.eventTitle || eventId}`;
+        document.getElementById('editEventId').value = eventId;
+        document.getElementById('editEventTitle').value = cfg.eventTitle || '';
+        document.getElementById('editEventDate').value = cfg.date || '';
+        document.getElementById('editEventVenue').value = cfg.venue || '';
+        document.getElementById('editEventWelcome').value = cfg.welcomeMsg || '';
+
+        modal.classList.remove('hidden');
+        switchAdminTab('details');
+        loadAdminMemories(eventId, data.memories);
+    });
+}
+
+function closeManageModal() {
+    const modal = document.getElementById('adminManageModal');
+    if (modal) modal.classList.add('hidden');
+    currentManagingEventId = null;
+}
+
+function switchAdminTab(tabName) {
+    const detailsTab = document.getElementById('admin-tab-details');
+    const memoriesTab = document.getElementById('admin-tab-memories');
+    const detailsBtn = document.getElementById('admin-tab-btn-details');
+    const memoriesBtn = document.getElementById('admin-tab-btn-memories');
+
+    if (tabName === 'details') {
+        detailsTab.classList.remove('hidden');
+        memoriesTab.classList.add('hidden');
+        detailsBtn.className = "px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold";
+        memoriesBtn.className = "px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300";
+    } else {
+        detailsTab.classList.add('hidden');
+        memoriesTab.classList.remove('hidden');
+        memoriesBtn.className = "px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold";
+        detailsBtn.className = "px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300";
+    }
+}
+
+function handleUpdateEvent(e) {
+    e.preventDefault();
+    if (!currentManagingEventId) return;
+
+    const eventId = currentManagingEventId;
+    const audioFile = document.getElementById('editAudioFile').files[0];
+    const bgFile = document.getElementById('editBgFile').files[0];
+
+    const readFileAsDataURL = (file) => {
+        return new Promise((resolve) => {
+            if (!file) return resolve(null);
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.readAsDataURL(file);
+        });
+    };
+
+    Promise.all([
+        readFileAsDataURL(audioFile),
+        readFileAsDataURL(bgFile)
+    ]).then(([newAudioBase64, newBgBase64]) => {
+        
+        eventsRef.child(eventId).child('config').once('value', snapshot => {
+            const oldConfig = snapshot.val() || {};
+
+            const updatedConfig = {
+                ...oldConfig,
+                eventTitle: document.getElementById('editEventTitle').value,
+                date: document.getElementById('editEventDate').value,
+                venue: document.getElementById('editEventVenue').value,
+                welcomeMsg: document.getElementById('editEventWelcome').value,
+                audioUrl: newAudioBase64 || oldConfig.audioUrl,
+                customBg: newBgBase64 || oldConfig.customBg
+            };
+
+            eventsRef.child(eventId).child('config').set(updatedConfig).then(() => {
+                alert("Event details updated successfully!");
+                closeManageModal();
+            });
+        });
+    });
+}
+
+function loadAdminMemories(eventId, memoriesData) {
+    const grid = document.getElementById('adminMemoriesGrid');
+    if (!grid) return;
+
+    if (!memoriesData) {
+        grid.innerHTML = `<p class="col-span-3 text-center text-slate-500 py-4">No memories uploaded yet.</p>`;
+        return;
+    }
+
+    let html = [];
+    Object.keys(memoriesData).forEach(memoryId => {
+        const item = memoriesData[memoryId];
+        if (item.media && Array.isArray(item.media)) {
+            item.media.forEach((imgUrl) => {
+                html.push(`
+                    <div class="relative group bg-slate-950 rounded-xl overflow-hidden border border-slate-800 aspect-square">
+                        <img src="${imgUrl}" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black/75 opacity-0 group-hover:opacity-100 transition flex flex-col justify-between p-2">
+                            <span class="text-[10px] text-amber-300 truncate">${escapeHtml(item.name)}</span>
+                            <button onclick="deleteMemoryItem('${eventId}', '${memoryId}')" class="bg-red-600 hover:bg-red-500 text-white py-1 px-2 rounded text-[10px] font-bold"><i class="fa-solid fa-trash mr-1"></i> Delete</button>
+                        </div>
+                    </div>
+                `);
+            });
+        }
+    });
+
+    grid.innerHTML = html.length > 0 ? html.join('') : `<p class="col-span-3 text-center text-slate-500 py-4">No photos found.</p>`;
+}
+
+function deleteMemoryItem(eventId, memoryId) {
+    if (confirm("Are you sure you want to delete this memory item permanently?")) {
+        eventsRef.child(eventId).child('memories').child(memoryId).remove().then(() => {
+            alert("Memory deleted successfully.");
+            eventsRef.child(eventId).once('value', snapshot => {
+                const data = snapshot.val();
+                loadAdminMemories(eventId, data.memories);
+            });
+        });
+    }
+}
+
+function showQrCode(url, title) {
+    const qrModal = document.getElementById('qrModal');
+    const qrModalTitle = document.getElementById('qrModalTitle');
+    const qrModalUrl = document.getElementById('qrModalUrl');
+    if (qrModalTitle) qrModalTitle.innerText = title;
+    if (qrModalUrl) qrModalUrl.innerText = url;
+    
+    const qrContainer = document.getElementById('qrcode');
+    if (qrContainer) {
+        qrContainer.innerHTML = '';
+        new QRCode(qrContainer, { text: url, width: 150, height: 150 });
+    }
+    if (qrModal) qrModal.classList.remove('hidden');
+}
+
+function closeQrModal() {
+    const qrModal = document.getElementById('qrModal');
+    if (qrModal) qrModal.classList.add('hidden');
+}
+
+function showEventStats(eventId) {
+    eventsRef.child(eventId).once('value', (snapshot) => {
+        const data = snapshot.val();
+        if (!data || !data.memories) {
+            alert("No memories data recorded for this event yet.");
+            return;
+        }
+        const memories = Object.values(data.memories);
+        let totalWishes = memories.filter(m => m.wish && m.wish.length > 0).length;
+        let totalPhotos = 0;
+        let totalVoices = memories.filter(m => m.audio !== null).length;
+
+        memories.forEach(m => {
+            if (m.media && Array.isArray(m.media)) totalPhotos += m.media.length;
+        });
+
+        const modalBody = document.getElementById('statModalBody');
+        if (modalBody) {
+            modalBody.innerHTML = `
+                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                    <p>📌 <b>Total Posts:</b> ${memories.length}</p>
+                    <p>💬 <b>Total Wishes:</b> ${totalWishes}</p>
+                    <p>🖼️ <b>Total Photos/Videos:</b> ${totalPhotos}</p>
+                    <p>🎙️ <b>Total Voice Notes:</b> ${totalVoices}</p>
+                </div>
+            `;
+        }
+        const statModal = document.getElementById('statModal');
+        if (statModal) statModal.classList.remove('hidden');
+    });
+}
+
+function closeStatModal() {
+    const statModal = document.getElementById('statModal');
+    if (statModal) statModal.classList.add('hidden');
+}
+
+function deleteEvent(eventId) {
+    if (confirm(`Delete event '${eventId}' permanently?`)) {
+        eventsRef.child(eventId).remove().then(() => alert("Event deleted."));
+    }
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
