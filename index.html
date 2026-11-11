@@ -2,13 +2,13 @@
 <html lang="ms">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>LenteraKita - Digital Memory Wall & Buku Tetamu Moden</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="wedding-bg min-h-screen text-slate-100 flex flex-col font-sans relative overflow-x-hidden">
+<body class="wedding-bg min-h-screen text-slate-100 flex flex-col font-sans relative overflow-x-hidden w-full max-w-full">
 
     <!-- Dynamic Blurred Background Layer -->
     <div class="dynamic-bg-container">
@@ -19,15 +19,15 @@
     <!-- LANDING DASHBOARD (Paparan Utama Pengenalan, Pakej & Tempahan) -->
     <!-- Dipaparkan bila tiada parameter event di URL (?event=...) -->
     <!-- ========================================================= -->
-    <div id="landingDashboard" class="hidden min-h-screen flex flex-col justify-between relative z-20">
+    <div id="landingDashboard" class="hidden min-h-screen w-full max-w-full overflow-x-hidden flex flex-col justify-between relative z-20">
         
         <!-- Landing Navbar -->
-        <header class="bg-slate-950/80 backdrop-blur-md border-b border-amber-500/20 sticky top-0 z-40 px-4 md:px-8 py-3.5 flex justify-between items-center shadow-2xl">
-            <div class="flex items-center space-x-3">
-                <img src="lenteraLogo.png" alt="LenteraKita" class="w-9 h-9 rounded-xl object-contain bg-slate-900 border border-amber-500/40 shadow-md" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3076/3076753.png'">
-                <div>
-                    <span class="text-lg font-serif font-bold text-gradient tracking-wide block leading-none">LenteraKita</span>
-                    <span class="text-[9px] text-amber-300/70 tracking-widest uppercase font-mono">Digital Memory Wall</span>
+        <header class="bg-slate-950/80 backdrop-blur-md border-b border-amber-500/20 sticky top-0 z-40 px-3.5 sm:px-6 md:px-8 py-3 flex justify-between items-center shadow-2xl w-full">
+            <div class="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
+                <img src="lenteraLogo.png" alt="LenteraKita" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl object-contain bg-slate-900 border border-amber-500/40 shadow-md flex-shrink-0" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3076/3076753.png'">
+                <div class="truncate">
+                    <span class="text-base sm:text-lg font-serif font-bold text-gradient tracking-wide block leading-none">LenteraKita</span>
+                    <span class="text-[8px] sm:text-[9px] text-amber-300/70 tracking-widest uppercase font-mono hidden xs:inline">Digital Memory Wall</span>
                 </div>
             </div>
 
@@ -38,136 +38,137 @@
                 <a href="#masuk-majlis" class="hover:text-amber-300 transition">Tetamu Majlis</a>
             </nav>
 
-            <div class="flex items-center space-x-2.5">
-                <a href="https://wa.me/601111745567?text=Hai%20LenteraKita,%20saya%20berminat%20untuk%20tanya%20dan%20tempah%20pakej%20Digital%20Memory%20Wall%20untuk%20majlis%20saya!" target="_blank" class="px-3.5 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white rounded-full text-xs font-bold shadow-lg flex items-center space-x-1.5 transition transform active:scale-95">
+            <div class="flex items-center space-x-2 flex-shrink-0">
+                <a href="https://wa.me/601111745567?text=Hai%20LenteraKita,%20saya%20berminat%20untuk%20tanya%20dan%20tempah%20pakej%20Digital%20Memory%20Wall%20untuk%20majlis%20saya!" target="_blank" class="px-3 py-1.5 sm:px-3.5 sm:py-1.5 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white rounded-full text-xs font-bold shadow-lg flex items-center space-x-1.5 transition transform active:scale-95">
                     <i class="fa-brands fa-whatsapp text-sm"></i>
                     <span class="hidden sm:inline">WhatsApp 011-1174 5567</span>
-                    <span class="sm:hidden">Chat</span>
+                    <span class="sm:hidden text-[11px]">WhatsApp</span>
                 </a>
-                <a href="admin.html" class="px-3 py-1.5 bg-slate-900/90 border border-amber-500/30 text-amber-300 hover:bg-slate-800 rounded-full text-xs font-medium transition" title="Super Admin Portal">
-                    <i class="fa-solid fa-lock text-xs mr-1"></i> Admin
+                <a href="admin.html" class="px-2.5 py-1.5 sm:px-3 sm:py-1.5 bg-slate-900/90 border border-amber-500/30 text-amber-300 hover:bg-slate-800 rounded-full text-xs font-medium transition" title="Super Admin Portal">
+                    <i class="fa-solid fa-lock text-[10px] sm:text-xs sm:mr-1"></i>
+                    <span class="hidden sm:inline">Admin</span>
                 </a>
             </div>
         </header>
 
         <!-- Hero Section -->
-        <section class="max-w-5xl mx-auto px-4 pt-12 pb-16 text-center space-y-6">
-            <div class="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold uppercase tracking-wider backdrop-blur-md animate-pulse">
+        <section class="max-w-5xl w-full mx-auto px-4 pt-8 sm:pt-12 pb-12 sm:pb-16 text-center space-y-5 sm:space-y-6">
+            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px] sm:text-xs font-semibold uppercase tracking-wider backdrop-blur-md animate-pulse">
                 <i class="fa-solid fa-sparkles text-amber-400"></i>
                 <span>Sentuhan Elegan Memori Abadi</span>
             </div>
 
-            <h1 class="text-3xl sm:text-5xl md:text-6xl font-serif font-extrabold text-amber-100 leading-tight tracking-tight max-w-3xl mx-auto">
+            <h1 class="text-2xl sm:text-4xl md:text-5xl font-serif font-extrabold text-amber-100 leading-tight tracking-tight max-w-3xl mx-auto break-words px-1">
                 Abadikan Setiap Doa & Momen Majlis Anda <span class="text-gradient">Secara Interaktif</span>
             </h1>
 
-            <p class="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto font-light leading-relaxed">
+            <p class="text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto font-light leading-relaxed px-1">
                 Tinggalkan buku tetamu konvensional. <strong>LenteraKita</strong> membawakan <em>Digital Memory Wall</em> ala Instagram Stories, rakaman ucapan suara (Voice Notes), filter kamera Dazz Cam, dan paparan langsung ke skrin TV dewan tanpa perlu sebarang muat turun aplikasi.
             </p>
 
             <!-- CTA Action Buttons -->
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
-                <a href="https://wa.me/601111745567?text=Salam%20LenteraKita,%20saya%20berminat%20untuk%20tempah%20pakej%20Digital%20Memory%20Wall%20untuk%20majlis%20perkahwinan/event%20saya.%20Boleh%20saya%20tahu%20kekosongan%20tarikh?" target="_blank" class="w-full sm:w-auto px-7 py-3.5 bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 text-slate-950 font-bold rounded-2xl shadow-xl hover:shadow-amber-500/20 hover:scale-105 transition transform flex items-center justify-center space-x-2 text-sm">
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 sm:pt-4 w-full max-w-md sm:max-w-none mx-auto">
+                <a href="https://wa.me/601111745567?text=Salam%20LenteraKita,%20saya%20berminat%20untuk%20tempah%20pakej%20Digital%20Memory%20Wall%20untuk%20majlis%20perkahwinan/event%20saya.%20Boleh%20saya%20tahu%20kekosongan%20tarikh?" target="_blank" class="w-full sm:w-auto px-6 py-3.5 bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 text-slate-950 font-bold rounded-2xl shadow-xl hover:shadow-amber-500/20 hover:scale-105 transition transform flex items-center justify-center space-x-2 text-xs sm:text-sm">
                     <i class="fa-brands fa-whatsapp text-lg text-slate-950"></i>
                     <span>Tempah Slot Majlis (011-1174 5567)</span>
                 </a>
-                <a href="#pakej-lentera" class="w-full sm:w-auto px-6 py-3.5 bg-slate-900/90 border border-amber-500/40 text-amber-300 font-semibold rounded-2xl shadow-lg hover:bg-slate-800 transition flex items-center justify-center space-x-2 text-sm">
+                <a href="#pakej-lentera" class="w-full sm:w-auto px-6 py-3.5 bg-slate-900/90 border border-amber-500/40 text-amber-300 font-semibold rounded-2xl shadow-lg hover:bg-slate-800 transition flex items-center justify-center space-x-2 text-xs sm:text-sm">
                     <i class="fa-solid fa-gem text-amber-400"></i>
                     <span>Lihat Pakej Majlis</span>
                 </a>
             </div>
 
             <!-- ANIMATED LIVE SHOWCASE & TESTIMONIAL OF THE SYSTEM IN WEDDING -->
-            <div class="pt-8 max-w-4xl mx-auto">
-                <div class="glass-card rounded-3xl p-4 sm:p-6 border border-amber-500/30 shadow-2xl relative overflow-hidden gold-glow">
+            <div class="pt-6 sm:pt-8 max-w-4xl w-full mx-auto">
+                <div class="glass-card rounded-2xl sm:rounded-3xl p-3 sm:p-6 border border-amber-500/30 shadow-2xl relative overflow-hidden gold-glow">
                     
                     <!-- Showcase Header -->
-                    <div class="flex flex-col sm:flex-row justify-between items-center border-b border-white/10 pb-3 mb-4 gap-2">
-                        <div class="flex items-center space-x-2.5">
-                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-                            <span class="text-xs font-mono font-bold uppercase tracking-wider text-amber-300">Bagaimana Lentera Berfungsi Di Hari Majlis</span>
+                    <div class="flex flex-col sm:flex-row justify-between items-center border-b border-white/10 pb-2.5 mb-3 gap-1.5 sm:gap-2">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping flex-shrink-0"></span>
+                            <span class="text-[11px] sm:text-xs font-mono font-bold uppercase tracking-wider text-amber-300">Bagaimana Lentera Berfungsi Di Hari Majlis</span>
                         </div>
-                        <div class="flex items-center space-x-1.5 text-xs text-amber-400 font-medium">
-                            <i class="fa-solid fa-star text-amber-400"></i>
-                            <i class="fa-solid fa-star text-amber-400"></i>
-                            <i class="fa-solid fa-star text-amber-400"></i>
-                            <i class="fa-solid fa-star text-amber-400"></i>
-                            <i class="fa-solid fa-star text-amber-400"></i>
-                            <span class="text-slate-300 ml-1 text-[11px] font-mono">(50+ Majlis Berjaya)</span>
+                        <div class="flex items-center space-x-1 text-xs text-amber-400 font-medium">
+                            <i class="fa-solid fa-star text-amber-400 text-xs"></i>
+                            <i class="fa-solid fa-star text-amber-400 text-xs"></i>
+                            <i class="fa-solid fa-star text-amber-400 text-xs"></i>
+                            <i class="fa-solid fa-star text-amber-400 text-xs"></i>
+                            <i class="fa-solid fa-star text-amber-400 text-xs"></i>
+                            <span class="text-slate-300 ml-1 text-[10px] font-mono">(50+ Majlis Berjaya)</span>
                         </div>
                     </div>
 
-                    <!-- Slides Container (Auto-rotating Animated Picture Showcase) -->
-                    <div class="relative w-full aspect-[16/10] sm:aspect-[16/9] max-h-[420px] rounded-2xl overflow-hidden bg-slate-950 border border-white/10 group">
+                    <!-- Responsive Slide Container with Fixed Minimum Height -->
+                    <div class="relative w-full h-[370px] sm:h-[400px] md:h-[430px] rounded-xl sm:rounded-2xl overflow-hidden bg-slate-950 border border-white/10 group">
                         
                         <!-- Slide 0: Imbas QR Meja -->
                         <div id="showcase-slide-0" class="showcase-slide absolute inset-0 transition-opacity duration-700 ease-in-out opacity-100 z-10 flex flex-col justify-end">
-                            <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=1200&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover brightness-[0.62]" alt="Tetamu Imbas QR di Meja">
-                            <div class="relative z-20 p-4 sm:p-6 bg-gradient-to-t from-slate-950 via-slate-950/85 to-transparent space-y-1.5 text-left">
-                                <span class="inline-block px-3 py-0.5 rounded-full bg-amber-500 text-slate-950 text-[10px] font-extrabold uppercase tracking-wider shadow">Langkah 1: Imbas QR Meja</span>
-                                <h4 class="text-base sm:text-xl font-serif font-bold text-amber-100">Tetamu Imbas QR Di Meja — Terus Masuk Tanpa Install App</h4>
-                                <p class="text-xs text-slate-300 italic">"Tetamu yang berumur pun boleh guna terus tanpa pening. Imbas QR terus keluar form doa dan kamera!"</p>
-                                <p class="text-[11px] font-semibold text-amber-400">— Anis &amp; Farhan (Bangi Convention Centre)</p>
+                            <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=1200&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover brightness-[0.55]" alt="Tetamu Imbas QR di Meja">
+                            <div class="relative z-20 p-3.5 sm:p-6 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent space-y-1.5 text-left">
+                                <span class="inline-block px-2.5 py-0.5 rounded-full bg-amber-500 text-slate-950 text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider shadow">Langkah 1: Imbas QR Meja</span>
+                                <h4 class="text-sm sm:text-lg md:text-xl font-serif font-bold text-amber-100 leading-snug">Tetamu Imbas QR Di Meja — Terus Masuk Tanpa Install App</h4>
+                                <p class="text-[11px] sm:text-xs text-slate-300 italic line-clamp-2 sm:line-clamp-none">"Tetamu yang berumur pun boleh guna terus tanpa pening. Imbas QR terus keluar form doa dan kamera!"</p>
+                                <p class="text-[10px] sm:text-[11px] font-semibold text-amber-400">— Anis &amp; Farhan (Bangi Convention Centre)</p>
                             </div>
                         </div>
 
                         <!-- Slide 1: Dazz Cam & Voice Vault -->
                         <div id="showcase-slide-1" class="showcase-slide absolute inset-0 transition-opacity duration-700 ease-in-out opacity-0 z-0 flex flex-col justify-end">
-                            <img src="https://images.unsplash.com/photo-1520854221256-17451cc331bf?q=80&w=1200&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover brightness-[0.62]" alt="Dazz Cam Live Filter">
-                            <div class="relative z-20 p-4 sm:p-6 bg-gradient-to-t from-slate-950 via-slate-950/85 to-transparent space-y-1.5 text-left">
-                                <span class="inline-block px-3 py-0.5 rounded-full bg-amber-500 text-slate-950 text-[10px] font-extrabold uppercase tracking-wider shadow">Langkah 2: Dazz Cam &amp; Voice Vault</span>
-                                <h4 class="text-base sm:text-xl font-serif font-bold text-amber-100">Swafoto Cantik dengan 5 Penapis Retro &amp; Rakam Suara</h4>
-                                <p class="text-xs text-slate-300 italic">"Filter Vintage 98 dengan Golden Warm memang favourite tetamu kami. Semua gambar selfie nampak aesthetic!"</p>
-                                <p class="text-[11px] font-semibold text-amber-400">— Danial &amp; Nadhirah (Glasshouse Seputeh)</p>
+                            <img src="https://images.unsplash.com/photo-1520854221256-17451cc331bf?q=80&w=1200&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover brightness-[0.55]" alt="Dazz Cam Live Filter">
+                            <div class="relative z-20 p-3.5 sm:p-6 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent space-y-1.5 text-left">
+                                <span class="inline-block px-2.5 py-0.5 rounded-full bg-amber-500 text-slate-950 text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider shadow">Langkah 2: Dazz Cam &amp; Voice Vault</span>
+                                <h4 class="text-sm sm:text-lg md:text-xl font-serif font-bold text-amber-100 leading-snug">Swafoto Cantik dengan 5 Penapis Retro &amp; Rakam Suara</h4>
+                                <p class="text-[11px] sm:text-xs text-slate-300 italic line-clamp-2 sm:line-clamp-none">"Filter Vintage 98 dengan Golden Warm memang favourite tetamu kami. Semua gambar selfie nampak aesthetic!"</p>
+                                <p class="text-[10px] sm:text-[11px] font-semibold text-amber-400">— Danial &amp; Nadhirah (Glasshouse Seputeh)</p>
                             </div>
                         </div>
 
                         <!-- Slide 2: Stories & Doa Bertulis -->
                         <div id="showcase-slide-2" class="showcase-slide absolute inset-0 transition-opacity duration-700 ease-in-out opacity-0 z-0 flex flex-col justify-end">
-                            <img src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover brightness-[0.62]" alt="Instagram Stories & Feed">
-                            <div class="relative z-20 p-4 sm:p-6 bg-gradient-to-t from-slate-950 via-slate-950/85 to-transparent space-y-1.5 text-left">
-                                <span class="inline-block px-3 py-0.5 rounded-full bg-amber-500 text-slate-950 text-[10px] font-extrabold uppercase tracking-wider shadow">Langkah 3: IG Stories &amp; Doa Digital</span>
-                                <h4 class="text-base sm:text-xl font-serif font-bold text-amber-100">Tap-to-Advance Stories &amp; Himpunan Ucapan Doa</h4>
-                                <p class="text-xs text-slate-300 italic">"Dapat baca balik doa-doa tetamu dan dengar gelak tawa voice note kawan-kawan lepas habis kenduri sangat sentimental."</p>
-                                <p class="text-[11px] font-semibold text-amber-400">— Megat &amp; Yasmin (Magica Grand Ballroom)</p>
+                            <img src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover brightness-[0.55]" alt="Instagram Stories & Feed">
+                            <div class="relative z-20 p-3.5 sm:p-6 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent space-y-1.5 text-left">
+                                <span class="inline-block px-2.5 py-0.5 rounded-full bg-amber-500 text-slate-950 text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider shadow">Langkah 3: IG Stories &amp; Doa Digital</span>
+                                <h4 class="text-sm sm:text-lg md:text-xl font-serif font-bold text-amber-100 leading-snug">Tap-to-Advance Stories &amp; Himpunan Ucapan Doa</h4>
+                                <p class="text-[11px] sm:text-xs text-slate-300 italic line-clamp-2 sm:line-clamp-none">"Dapat baca balik doa-doa tetamu dan dengar gelak tawa voice note kawan-kawan lepas habis kenduri sangat sentimental."</p>
+                                <p class="text-[10px] sm:text-[11px] font-semibold text-amber-400">— Megat &amp; Yasmin (Magica Grand Ballroom)</p>
                             </div>
                         </div>
 
                         <!-- Slide 3: TV Slideshow Dewan -->
                         <div id="showcase-slide-3" class="showcase-slide absolute inset-0 transition-opacity duration-700 ease-in-out opacity-0 z-0 flex flex-col justify-end">
-                            <img src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?q=80&w=1200&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover brightness-[0.62]" alt="Live TV Projektor Dewan">
-                            <div class="relative z-20 p-4 sm:p-6 bg-gradient-to-t from-slate-950 via-slate-950/85 to-transparent space-y-1.5 text-left">
-                                <span class="inline-block px-3 py-0.5 rounded-full bg-amber-500 text-slate-950 text-[10px] font-extrabold uppercase tracking-wider shadow">Langkah 4: Live TV Slideshow Dewan</span>
-                                <h4 class="text-base sm:text-xl font-serif font-bold text-amber-100">Gambar &amp; Ucapan Tetamu Terpampang Live di Skrin Besar</h4>
-                                <p class="text-xs text-slate-300 italic">"Bila tetamu upload gambar terus keluar kat skrin projektor depan pelamin, satu dewan bersorak teruja!"</p>
-                                <p class="text-[11px] font-semibold text-amber-400">— Harris &amp; Fazlina (Royale Chulan KL)</p>
+                            <img src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?q=80&w=1200&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover brightness-[0.55]" alt="Live TV Projektor Dewan">
+                            <div class="relative z-20 p-3.5 sm:p-6 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent space-y-1.5 text-left">
+                                <span class="inline-block px-2.5 py-0.5 rounded-full bg-amber-500 text-slate-950 text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider shadow">Langkah 4: Live TV Slideshow Dewan</span>
+                                <h4 class="text-sm sm:text-lg md:text-xl font-serif font-bold text-amber-100 leading-snug">Gambar &amp; Ucapan Tetamu Terpampang Live di Skrin Besar</h4>
+                                <p class="text-[11px] sm:text-xs text-slate-300 italic line-clamp-2 sm:line-clamp-none">"Bila tetamu upload gambar terus keluar kat skrin projektor depan pelamin, satu dewan bersorak teruja!"</p>
+                                <p class="text-[10px] sm:text-[11px] font-semibold text-amber-400">— Harris &amp; Fazlina (Royale Chulan KL)</p>
                             </div>
                         </div>
 
-                        <!-- Nav Chevrons -->
-                        <button onclick="prevShowcaseSlide()" class="absolute left-3 top-1/2 -translate-y-1/2 z-30 w-8 h-8 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center text-xs transition border border-white/20">
+                        <!-- Nav Chevrons Placed Above Text Area -->
+                        <button onclick="prevShowcaseSlide()" class="absolute left-2.5 top-[38%] z-30 w-8 h-8 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center text-xs transition border border-white/20 active:scale-95">
                             <i class="fa-solid fa-chevron-left"></i>
                         </button>
-                        <button onclick="nextShowcaseSlide()" class="absolute right-3 top-1/2 -translate-y-1/2 z-30 w-8 h-8 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center text-xs transition border border-white/20">
+                        <button onclick="nextShowcaseSlide()" class="absolute right-2.5 top-[38%] z-30 w-8 h-8 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center text-xs transition border border-white/20 active:scale-95">
                             <i class="fa-solid fa-chevron-right"></i>
                         </button>
                     </div>
 
-                    <!-- Dot Indicators & Step Selector -->
-                    <div class="flex justify-center items-center gap-1.5 sm:gap-2 pt-3">
-                        <button onclick="setShowcaseSlide(0)" id="showcase-dot-0" class="px-2.5 sm:px-3 py-1 rounded-full text-[10px] font-bold bg-amber-500 text-slate-950 transition">1. Scan QR</button>
-                        <button onclick="setShowcaseSlide(1)" id="showcase-dot-1" class="px-2.5 sm:px-3 py-1 rounded-full text-[10px] font-bold bg-white/15 text-slate-300 hover:bg-white/25 transition">2. Dazz Cam</button>
-                        <button onclick="setShowcaseSlide(2)" id="showcase-dot-2" class="px-2.5 sm:px-3 py-1 rounded-full text-[10px] font-bold bg-white/15 text-slate-300 hover:bg-white/25 transition">3. Stories</button>
-                        <button onclick="setShowcaseSlide(3)" id="showcase-dot-3" class="px-2.5 sm:px-3 py-1 rounded-full text-[10px] font-bold bg-white/15 text-slate-300 hover:bg-white/25 transition">4. Live TV</button>
+                    <!-- Step Selector Buttons (2x2 grid on mobile, flex on desktop) -->
+                    <div class="grid grid-cols-2 sm:flex sm:justify-center gap-1.5 sm:gap-2 pt-3">
+                        <button onclick="setShowcaseSlide(0)" id="showcase-dot-0" class="px-2.5 sm:px-3 py-1.5 rounded-xl sm:rounded-full text-[10px] font-bold bg-amber-500 text-slate-950 transition text-center">1. Scan QR</button>
+                        <button onclick="setShowcaseSlide(1)" id="showcase-dot-1" class="px-2.5 sm:px-3 py-1.5 rounded-xl sm:rounded-full text-[10px] font-bold bg-white/15 text-slate-300 hover:bg-white/25 transition text-center">2. Dazz Cam</button>
+                        <button onclick="setShowcaseSlide(2)" id="showcase-dot-2" class="px-2.5 sm:px-3 py-1.5 rounded-xl sm:rounded-full text-[10px] font-bold bg-white/15 text-slate-300 hover:bg-white/25 transition text-center">3. Stories</button>
+                        <button onclick="setShowcaseSlide(3)" id="showcase-dot-3" class="px-2.5 sm:px-3 py-1.5 rounded-xl sm:rounded-full text-[10px] font-bold bg-white/15 text-slate-300 hover:bg-white/25 transition text-center">4. Live TV</button>
                     </div>
                 </div>
             </div>
 
-            <!-- MOVING TESTIMONIAL TICKER / MARQUEE -->
-            <div class="pt-4 max-w-5xl mx-auto overflow-hidden relative">
+            <!-- MOVING TESTIMONIAL TICKER / MARQUEE (Constrained Wrapper) -->
+            <div class="marquee-wrapper pt-4 select-none">
                 <div class="animate-marquee flex space-x-3 py-2">
                     <!-- Testimonial 1 -->
-                    <div class="flex-shrink-0 w-72 bg-slate-950/70 border border-white/10 rounded-2xl p-3 text-left space-y-1 backdrop-blur-md">
+                    <div class="flex-shrink-0 w-64 sm:w-72 bg-slate-950/70 border border-white/10 rounded-2xl p-3 text-left space-y-1 backdrop-blur-md">
                         <div class="flex items-center justify-between text-[11px]">
                             <span class="font-bold text-amber-300">Zahid &amp; Syuhada</span>
                             <span class="text-amber-400">⭐⭐⭐⭐⭐</span>
@@ -176,7 +177,7 @@
                     </div>
 
                     <!-- Testimonial 2 -->
-                    <div class="flex-shrink-0 w-72 bg-slate-950/70 border border-white/10 rounded-2xl p-3 text-left space-y-1 backdrop-blur-md">
+                    <div class="flex-shrink-0 w-64 sm:w-72 bg-slate-950/70 border border-white/10 rounded-2xl p-3 text-left space-y-1 backdrop-blur-md">
                         <div class="flex items-center justify-between text-[11px]">
                             <span class="font-bold text-amber-300">Aiman &amp; Farah</span>
                             <span class="text-amber-400">⭐⭐⭐⭐⭐</span>
@@ -185,7 +186,7 @@
                     </div>
 
                     <!-- Testimonial 3 -->
-                    <div class="flex-shrink-0 w-72 bg-slate-950/70 border border-white/10 rounded-2xl p-3 text-left space-y-1 backdrop-blur-md">
+                    <div class="flex-shrink-0 w-64 sm:w-72 bg-slate-950/70 border border-white/10 rounded-2xl p-3 text-left space-y-1 backdrop-blur-md">
                         <div class="flex items-center justify-between text-[11px]">
                             <span class="font-bold text-amber-300">Hafiz &amp; Liyana</span>
                             <span class="text-amber-400">⭐⭐⭐⭐⭐</span>
@@ -194,7 +195,7 @@
                     </div>
 
                     <!-- Testimonial 4 -->
-                    <div class="flex-shrink-0 w-72 bg-slate-950/70 border border-white/10 rounded-2xl p-3 text-left space-y-1 backdrop-blur-md">
+                    <div class="flex-shrink-0 w-64 sm:w-72 bg-slate-950/70 border border-white/10 rounded-2xl p-3 text-left space-y-1 backdrop-blur-md">
                         <div class="flex items-center justify-between text-[11px]">
                             <span class="font-bold text-amber-300">Razif &amp; Idayu</span>
                             <span class="text-amber-400">⭐⭐⭐⭐⭐</span>
@@ -203,7 +204,7 @@
                     </div>
 
                     <!-- Duplicate for infinite seamless scroll -->
-                    <div class="flex-shrink-0 w-72 bg-slate-950/70 border border-white/10 rounded-2xl p-3 text-left space-y-1 backdrop-blur-md">
+                    <div class="flex-shrink-0 w-64 sm:w-72 bg-slate-950/70 border border-white/10 rounded-2xl p-3 text-left space-y-1 backdrop-blur-md">
                         <div class="flex items-center justify-between text-[11px]">
                             <span class="font-bold text-amber-300">Zahid &amp; Syuhada</span>
                             <span class="text-amber-400">⭐⭐⭐⭐⭐</span>
@@ -211,7 +212,7 @@
                         <p class="text-[11px] text-slate-300">"Pakej Platinum paling berbaloi! Tetamu berebut-rebut nak selfie sebab nak tengok gambar keluar kat skrin TV dewan."</p>
                     </div>
 
-                    <div class="flex-shrink-0 w-72 bg-slate-950/70 border border-white/10 rounded-2xl p-3 text-left space-y-1 backdrop-blur-md">
+                    <div class="flex-shrink-0 w-64 sm:w-72 bg-slate-950/70 border border-white/10 rounded-2xl p-3 text-left space-y-1 backdrop-blur-md">
                         <div class="flex items-center justify-between text-[11px]">
                             <span class="font-bold text-amber-300">Aiman &amp; Farah</span>
                             <span class="text-amber-400">⭐⭐⭐⭐⭐</span>
@@ -222,94 +223,94 @@
             </div>
 
             <!-- Kod QR & Masuk Acara Untuk Tetamu -->
-            <div id="masuk-majlis" class="pt-8 max-w-md mx-auto">
-                <div class="glass-card rounded-2xl p-5 border border-amber-500/30 text-left space-y-3 shadow-2xl relative overflow-hidden">
+            <div id="masuk-majlis" class="pt-6 sm:pt-8 max-w-md w-full mx-auto px-1">
+                <div class="glass-card rounded-2xl p-4 sm:p-5 border border-amber-500/30 text-left space-y-3 shadow-2xl relative overflow-hidden">
                     <div class="absolute -right-8 -top-8 w-24 h-24 bg-amber-500/10 rounded-full blur-xl pointer-events-none"></div>
                     <div class="flex items-center space-x-2 text-amber-300">
-                        <i class="fa-solid fa-qrcode text-lg"></i>
+                        <i class="fa-solid fa-qrcode text-base sm:text-lg"></i>
                         <h3 class="font-serif font-bold text-sm">Anda Tetamu Majlis?</h3>
                     </div>
-                    <p class="text-xs text-slate-300 font-light leading-relaxed">
+                    <p class="text-[11px] sm:text-xs text-slate-300 font-light leading-relaxed">
                         Tetamu boleh masuk ke dinding memori majlis dengan <strong>mengimbas Kod QR</strong> yang disediakan khas oleh pihak pengantin di atas meja majlis anda.
                     </p>
                     <form onsubmit="handleLandingEventSearch(event)" class="flex space-x-2 pt-1">
                         <input type="text" id="landingEventCodeInput" placeholder="Atau masukkan kod majlis (cth: walimah-haziq)" class="flex-grow bg-slate-950 border border-white/15 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-amber-400">
-                        <button type="submit" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs transition">Buka</button>
+                        <button type="submit" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs transition active:scale-95">Buka</button>
                     </form>
                 </div>
             </div>
         </section>
 
         <!-- Section: Apa Itu Lentera & Ciri-Ciri Menarik -->
-        <section id="ciri-menarik" class="max-w-5xl mx-auto px-4 py-12 space-y-8">
+        <section id="ciri-menarik" class="max-w-5xl w-full mx-auto px-4 py-10 sm:py-12 space-y-6 sm:space-y-8">
             <div class="text-center space-y-2">
-                <span class="text-xs font-mono uppercase tracking-widest text-amber-400">Pengalaman Moden & Interaktif</span>
-                <h2 class="text-2xl sm:text-4xl font-serif font-bold text-amber-100">Apa Yang Menarik Dalam LenteraKita?</h2>
-                <p class="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto">Dicipta khusus untuk memeriahkan majlis perkahwinan, pertunangan, hari lahir, dan acara korporat.</p>
+                <span class="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-amber-400">Pengalaman Moden & Interaktif</span>
+                <h2 class="text-xl sm:text-3xl md:text-4xl font-serif font-bold text-amber-100">Apa Yang Menarik Dalam LenteraKita?</h2>
+                <p class="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto px-2">Dicipta khusus untuk memeriahkan majlis perkahwinan, pertunangan, hari lahir, dan acara korporat.</p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 <!-- Ciri 1 -->
-                <div class="glass-card rounded-2xl p-5 border border-white/10 hover:border-amber-500/40 transition space-y-3">
-                    <div class="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-300 flex items-center justify-center text-xl">
+                <div class="glass-card rounded-2xl p-4 sm:p-5 border border-white/10 hover:border-amber-500/40 transition space-y-2.5 sm:space-y-3">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-300 flex items-center justify-center text-lg sm:text-xl">
                         <i class="fa-solid fa-camera-retro"></i>
                     </div>
-                    <h3 class="font-serif font-bold text-amber-200 text-base">Capture Studio & Dazz Cam</h3>
+                    <h3 class="font-serif font-bold text-amber-200 text-sm sm:text-base">Capture Studio & Dazz Cam</h3>
                     <p class="text-xs text-slate-300 font-light leading-relaxed">
                         Tetamu boleh berswafoto menggunakan kamera telefon pintar lengkap dengan 5 penapis estetik langsung (Vintage 98, Golden Warm, B&W Noir, Cyber Glitch) atau memuat naik daripada galeri.
                     </p>
                 </div>
 
                 <!-- Ciri 2 -->
-                <div class="glass-card rounded-2xl p-5 border border-white/10 hover:border-amber-500/40 transition space-y-3">
-                    <div class="w-12 h-12 rounded-2xl bg-rose-500/20 border border-rose-500/40 text-rose-300 flex items-center justify-center text-xl">
+                <div class="glass-card rounded-2xl p-4 sm:p-5 border border-white/10 hover:border-amber-500/40 transition space-y-2.5 sm:space-y-3">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-rose-500/20 border border-rose-500/40 text-rose-300 flex items-center justify-center text-lg sm:text-xl">
                         <i class="fa-brands fa-instagram"></i>
                     </div>
-                    <h3 class="font-serif font-bold text-amber-200 text-base">IG Stories & Memory Feed</h3>
+                    <h3 class="font-serif font-bold text-amber-200 text-sm sm:text-base">IG Stories & Memory Feed</h3>
                     <p class="text-xs text-slate-300 font-light leading-relaxed">
                         Suapan ala Instagram moden dengan butang tap untuk melihat Story tetamu satu per satu, lengkap dengan fungsi sukai (like) dan tinggalkan komen doa kebahagiaan.
                     </p>
                 </div>
 
                 <!-- Ciri 3 -->
-                <div class="glass-card rounded-2xl p-5 border border-white/10 hover:border-amber-500/40 transition space-y-3">
-                    <div class="w-12 h-12 rounded-2xl bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 flex items-center justify-center text-xl">
+                <div class="glass-card rounded-2xl p-4 sm:p-5 border border-white/10 hover:border-amber-500/40 transition space-y-2.5 sm:space-y-3">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 flex items-center justify-center text-lg sm:text-xl">
                         <i class="fa-solid fa-microphone-lines"></i>
                     </div>
-                    <h3 class="font-serif font-bold text-amber-200 text-base">Voice Notes Vault</h3>
+                    <h3 class="font-serif font-bold text-amber-200 text-sm sm:text-base">Voice Notes Vault</h3>
                     <p class="text-xs text-slate-300 font-light leading-relaxed">
                         Bagi tetamu yang segan bergambar, mereka boleh merakam pesanan suara ucapan ikhlas secara langsung sehingga 30 saat untuk disimpan selama-lamanya.
                     </p>
                 </div>
 
                 <!-- Ciri 4 -->
-                <div class="glass-card rounded-2xl p-5 border border-white/10 hover:border-amber-500/40 transition space-y-3">
-                    <div class="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-300 flex items-center justify-center text-xl">
+                <div class="glass-card rounded-2xl p-4 sm:p-5 border border-white/10 hover:border-amber-500/40 transition space-y-2.5 sm:space-y-3">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-300 flex items-center justify-center text-lg sm:text-xl">
                         <i class="fa-solid fa-tv"></i>
                     </div>
-                    <h3 class="font-serif font-bold text-amber-200 text-base">Live TV Slideshow Dewan</h3>
+                    <h3 class="font-serif font-bold text-amber-200 text-sm sm:text-base">Live TV Slideshow Dewan</h3>
                     <p class="text-xs text-slate-300 font-light leading-relaxed">
                         Pancarkan terus ke skrin projektor atau TV dewan perkahwinan anda. Setiap gambar dan ucapan tetamu akan bersilih ganti secara masa nyata (*real-time sync*).
                     </p>
                 </div>
 
                 <!-- Ciri 5 -->
-                <div class="glass-card rounded-2xl p-5 border border-white/10 hover:border-amber-500/40 transition space-y-3">
-                    <div class="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/40 text-purple-300 flex items-center justify-center text-xl">
+                <div class="glass-card rounded-2xl p-4 sm:p-5 border border-white/10 hover:border-amber-500/40 transition space-y-2.5 sm:space-y-3">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-purple-500/20 border border-purple-500/40 text-purple-300 flex items-center justify-center text-lg sm:text-xl">
                         <i class="fa-solid fa-music"></i>
                     </div>
-                    <h3 class="font-serif font-bold text-amber-200 text-base">Tema & Lagu Latar Dinamik</h3>
+                    <h3 class="font-serif font-bold text-amber-200 text-sm sm:text-base">Tema & Lagu Latar Dinamik</h3>
                     <p class="text-xs text-slate-300 font-light leading-relaxed">
                         Bakal pengantin boleh memilih warna tema sendiri, gambar latar belakang peribadi, dan lagu MP3 romantis yang akan berputar lembut sewaktu tetamu membuka laman ini.
                     </p>
                 </div>
 
                 <!-- Ciri 6 -->
-                <div class="glass-card rounded-2xl p-5 border border-white/10 hover:border-amber-500/40 transition space-y-3">
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 flex items-center justify-center text-xl">
+                <div class="glass-card rounded-2xl p-4 sm:p-5 border border-white/10 hover:border-amber-500/40 transition space-y-2.5 sm:space-y-3">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 flex items-center justify-center text-lg sm:text-xl">
                         <i class="fa-solid fa-bolt"></i>
                     </div>
-                    <h3 class="font-serif font-bold text-amber-200 text-base">Pantas & Mesra Telefon</h3>
+                    <h3 class="font-serif font-bold text-amber-200 text-sm sm:text-base">Pantas & Mesra Telefon</h3>
                     <p class="text-xs text-slate-300 font-light leading-relaxed">
                         Tetamu tidak perlu memuat turun apa-apa aplikasi dari App Store. Hanya buka kamera telefon, imbas Kod QR meja, dan terus nikmati pengalaman majlis anda.
                     </p>
@@ -318,56 +319,56 @@
         </section>
 
         <!-- Section: Pakej Perkhidmatan LenteraKita -->
-        <section id="pakej-lentera" class="max-w-5xl mx-auto px-4 py-12 space-y-8">
+        <section id="pakej-lentera" class="max-w-5xl w-full mx-auto px-4 py-10 sm:py-12 space-y-6 sm:space-y-8">
             <div class="text-center space-y-2">
-                <span class="text-xs font-mono uppercase tracking-widest text-amber-400">Pilihan Istimewa Majlis Anda</span>
-                <h2 class="text-2xl sm:text-4xl font-serif font-bold text-amber-100">Pakej Perkhidmatan LenteraKita</h2>
-                <p class="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto">Pilih pakej yang sesuai dengan tema dan skala majlis keraian anda.</p>
+                <span class="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-amber-400">Pilihan Istimewa Majlis Anda</span>
+                <h2 class="text-xl sm:text-3xl md:text-4xl font-serif font-bold text-amber-100">Pakej Perkhidmatan LenteraKita</h2>
+                <p class="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto px-2">Pilih pakej yang sesuai dengan tema dan skala majlis keraian anda.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 items-stretch">
                 <!-- Pakej 1: Silver -->
-                <div class="glass-card rounded-3xl p-6 border border-white/10 flex flex-col justify-between space-y-6 hover:border-amber-500/40 transition">
-                    <div class="space-y-4">
-                        <div class="inline-block px-3 py-1 rounded-full bg-slate-800 text-slate-300 text-[11px] font-semibold uppercase tracking-wider">
+                <div class="glass-card rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-white/10 flex flex-col justify-between space-y-5 sm:space-y-6 hover:border-amber-500/40 transition">
+                    <div class="space-y-3 sm:space-y-4">
+                        <div class="inline-block px-3 py-1 rounded-full bg-slate-800 text-slate-300 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider">
                             Pakej Cahaya (Silver)
                         </div>
                         <div class="pt-1">
                             <span class="text-3xl sm:text-4xl font-serif font-extrabold text-amber-300">RM49</span>
                             <span class="text-xs text-slate-400 font-light"> / majlis</span>
                         </div>
-                        <h3 class="text-xl font-serif font-bold text-amber-200">Sederhana & Manis</h3>
+                        <h3 class="text-lg sm:text-xl font-serif font-bold text-amber-200">Sederhana & Manis</h3>
                         <p class="text-xs text-slate-400">Sesuai untuk majlis pertunangan, aqiqah, atau majlis nikah intim.</p>
-                        <div class="border-t border-white/10 pt-4 space-y-2 text-xs text-slate-300">
+                        <div class="border-t border-white/10 pt-3.5 space-y-2 text-xs text-slate-300">
                             <p class="flex items-center space-x-2"><i class="fa-solid fa-check text-emerald-400"></i><span>Digital Guestbook & Live Feed</span></p>
                             <p class="flex items-center space-x-2"><i class="fa-solid fa-check text-emerald-400"></i><span>Janaan Kod QR Majlis</span></p>
                             <p class="flex items-center space-x-2"><i class="fa-solid fa-check text-emerald-400"></i><span>Muzik Latar Belakang Pilihan</span></p>
                             <p class="flex items-center space-x-2"><i class="fa-solid fa-check text-emerald-400"></i><span>Akses Memori Selama 30 Hari</span></p>
                         </div>
                     </div>
-                    <a href="https://wa.me/601111745567?text=Hai%20LenteraKita,%20saya%20berminat%20dengan%20Pakej%20Cahaya%20(Silver)%20RM49.%20Boleh%20terangkan%20lebih%20lanjut?" target="_blank" class="w-full py-3 bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold rounded-xl text-xs text-center border border-amber-500/30 transition flex items-center justify-center space-x-1.5">
+                    <a href="https://wa.me/601111745567?text=Hai%20LenteraKita,%20saya%20berminat%20dengan%20Pakej%20Cahaya%20(Silver)%20RM49.%20Boleh%20terangkan%20lebih%20lanjut?" target="_blank" class="w-full py-3 bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold rounded-xl text-xs text-center border border-amber-500/30 transition flex items-center justify-center space-x-1.5 active:scale-95">
                         <i class="fa-brands fa-whatsapp text-sm"></i><span>Tanya Pakej Silver (RM49)</span>
                     </a>
                 </div>
 
                 <!-- Pakej 2: Gold (Popular) -->
-                <div class="glass-card rounded-3xl p-6 border-2 border-amber-500/70 relative flex flex-col justify-between space-y-6 shadow-2xl shadow-amber-500/10 transform md:-translate-y-2">
-                    <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-extrabold text-[11px] rounded-full uppercase tracking-wider shadow-md whitespace-nowrap">
+                <div class="glass-card rounded-2xl sm:rounded-3xl p-5 sm:p-6 border-2 border-amber-500/70 relative flex flex-col justify-between space-y-5 sm:space-y-6 shadow-2xl shadow-amber-500/10 transform md:-translate-y-2">
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3.5 py-0.5 sm:py-1 bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-extrabold text-[10px] sm:text-[11px] rounded-full uppercase tracking-wider shadow-md whitespace-nowrap">
                         Paling Popular ✨
                     </div>
-                    <div class="space-y-4 pt-2">
-                        <div class="inline-block px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-[11px] font-semibold uppercase tracking-wider">
+                    <div class="space-y-3 sm:space-y-4 pt-1 sm:pt-2">
+                        <div class="inline-block px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider">
                             Pakej Seri (Gold)
                         </div>
-                        <div class="pt-1 flex items-baseline space-x-2">
-                            <span class="text-base text-slate-400 line-through">RM120</span>
+                        <div class="pt-1 flex flex-wrap items-baseline gap-2">
+                            <span class="text-sm sm:text-base text-slate-400 line-through">RM120</span>
                             <span class="text-3xl sm:text-4xl font-serif font-extrabold text-amber-300">RM99</span>
                             <span class="text-xs text-amber-200/80 font-light"> / majlis</span>
-                            <span class="ml-auto text-[10px] px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 font-bold uppercase tracking-wider">JIMAT RM21</span>
+                            <span class="text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 font-bold uppercase tracking-wider">JIMAT RM21</span>
                         </div>
-                        <h3 class="text-xl font-serif font-bold text-amber-100">Walimah Penuh Kenangan</h3>
+                        <h3 class="text-lg sm:text-xl font-serif font-bold text-amber-100">Walimah Penuh Kenangan</h3>
                         <p class="text-xs text-slate-300">Pilihan utama pasangan pengantin untuk kenduri walimatulurus.</p>
-                        <div class="border-t border-white/10 pt-4 space-y-2.5 text-xs text-slate-200">
+                        <div class="border-t border-white/10 pt-3.5 space-y-2 text-xs text-slate-200">
                             <p class="flex items-center space-x-2"><i class="fa-solid fa-check text-amber-400"></i><span>Semua ciri dalam Pakej Silver</span></p>
                             <p class="flex items-center space-x-2"><i class="fa-solid fa-check text-amber-400"></i><span><strong>Capture Studio & 5 Penapis Dazz Cam</strong></span></p>
                             <p class="flex items-center space-x-2"><i class="fa-solid fa-check text-amber-400"></i><span><strong>Instagram Story Tap Viewer</strong></span></p>
@@ -376,26 +377,26 @@
                             <p class="flex items-center space-x-2"><i class="fa-solid fa-check text-amber-400"></i><span>Akses Memori Selama 60 Hari</span></p>
                         </div>
                     </div>
-                    <a href="https://wa.me/601111745567?text=Hai%20LenteraKita,%20saya%20berminat%20untuk%20tempah%20Pakej%20Seri%20(Gold)%20Harga%20Promo%20RM99%20untuk%20majlis%20perkahwinan%20saya!" target="_blank" class="w-full py-3.5 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-extrabold rounded-xl text-xs text-center shadow-lg transition flex items-center justify-center space-x-1.5">
+                    <a href="https://wa.me/601111745567?text=Hai%20LenteraKita,%20saya%20berminat%20untuk%20tempah%20Pakej%20Seri%20(Gold)%20Harga%20Promo%20RM99%20untuk%20majlis%20perkahwinan%20saya!" target="_blank" class="w-full py-3 sm:py-3.5 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-extrabold rounded-xl text-xs text-center shadow-lg transition flex items-center justify-center space-x-1.5 active:scale-95">
                         <i class="fa-brands fa-whatsapp text-sm"></i><span>Tempah Pakej Gold (RM99)</span>
                     </a>
                 </div>
 
                 <!-- Pakej 3: Platinum VIP -->
-                <div class="glass-card rounded-3xl p-6 border border-white/10 flex flex-col justify-between space-y-6 hover:border-amber-500/40 transition">
-                    <div class="space-y-4">
-                        <div class="inline-block px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-[11px] font-semibold uppercase tracking-wider">
+                <div class="glass-card rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-white/10 flex flex-col justify-between space-y-5 sm:space-y-6 hover:border-amber-500/40 transition">
+                    <div class="space-y-3 sm:space-y-4">
+                        <div class="inline-block px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider">
                             Pakej Mahligai (Platinum VIP)
                         </div>
-                        <div class="pt-1 flex items-baseline space-x-2">
-                            <span class="text-base text-slate-400 line-through">RM150</span>
+                        <div class="pt-1 flex flex-wrap items-baseline gap-2">
+                            <span class="text-sm sm:text-base text-slate-400 line-through">RM150</span>
                             <span class="text-3xl sm:text-4xl font-serif font-extrabold text-amber-300">RM129</span>
                             <span class="text-xs text-purple-200/80 font-light"> / majlis</span>
-                            <span class="ml-auto text-[10px] px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 font-bold uppercase tracking-wider">JIMAT RM21</span>
+                            <span class="text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 font-bold uppercase tracking-wider">JIMAT RM21</span>
                         </div>
-                        <h3 class="text-xl font-serif font-bold text-amber-200">Gemerlap Grand Ballroom</h3>
+                        <h3 class="text-lg sm:text-xl font-serif font-bold text-amber-200">Gemerlap Grand Ballroom</h3>
                         <p class="text-xs text-slate-400">Pengalaman gah dengan pancaran projektor langsung di dewan besar.</p>
-                        <div class="border-t border-white/10 pt-4 space-y-2 text-xs text-slate-300">
+                        <div class="border-t border-white/10 pt-3.5 space-y-2 text-xs text-slate-300">
                             <p class="flex items-center space-x-2"><i class="fa-solid fa-check text-purple-400"></i><span>Semua ciri dalam Pakej Gold</span></p>
                             <p class="flex items-center space-x-2"><i class="fa-solid fa-check text-purple-400"></i><span><strong>Mod Live TV Slideshow untuk Projektor</strong></span></p>
                             <p class="flex items-center space-x-2"><i class="fa-solid fa-check text-purple-400"></i><span>Muat Naik Tanpa Had (Unlimited Media)</span></p>
@@ -404,7 +405,7 @@
                             <p class="flex items-center space-x-2"><i class="fa-solid fa-check text-purple-400"></i><span>Simpanan Arkib Kekal Sepanjang Hayat</span></p>
                         </div>
                     </div>
-                    <a href="https://wa.me/601111745567?text=Hai%20LenteraKita,%20saya%20berminat%20untuk%20tempah%20Pakej%20Mahligai%20(Platinum%20VIP)%20Harga%20Promo%20RM129%20lengkap%20Live%20TV%20Slideshow%20Dewan!" target="_blank" class="w-full py-3 bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold rounded-xl text-xs text-center border border-amber-500/30 transition flex items-center justify-center space-x-1.5">
+                    <a href="https://wa.me/601111745567?text=Hai%20LenteraKita,%20saya%20berminat%20untuk%20tempah%20Pakej%20Mahligai%20(Platinum%20VIP)%20Harga%20Promo%20RM129%20lengkap%20Live%20TV%20Slideshow%20Dewan!" target="_blank" class="w-full py-3 bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold rounded-xl text-xs text-center border border-amber-500/30 transition flex items-center justify-center space-x-1.5 active:scale-95">
                         <i class="fa-brands fa-whatsapp text-sm"></i><span>Tempah Pakej VIP (RM129)</span>
                     </a>
                 </div>
@@ -412,36 +413,36 @@
         </section>
 
         <!-- Section: Media Sosial & Hubungi Langsung -->
-        <section class="max-w-4xl mx-auto px-4 py-12 text-center space-y-6">
-            <div class="glass-card rounded-3xl p-8 border border-amber-500/30 space-y-6 shadow-2xl relative overflow-hidden">
+        <section class="max-w-4xl w-full mx-auto px-4 py-10 sm:py-12 text-center space-y-6">
+            <div class="glass-card rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-amber-500/30 space-y-5 sm:space-y-6 shadow-2xl relative overflow-hidden">
                 <div class="space-y-2">
-                    <h3 class="text-xl sm:text-2xl font-serif font-bold text-amber-200">Ikuti Perkembangan & Hubungi Kami</h3>
+                    <h3 class="text-lg sm:text-2xl font-serif font-bold text-amber-200">Ikuti Perkembangan & Hubungi Kami</h3>
                     <p class="text-xs text-slate-300 max-w-md mx-auto">Lihat contoh majlis sebenar, testimoni, dan video demo menarik di media sosial rasmi LenteraKita.</p>
                 </div>
 
                 <!-- Social Icons Links -->
-                <div class="flex items-center justify-center gap-3 flex-wrap">
-                    <a href="https://www.tiktok.com/@lenterakita" target="_blank" class="px-4 py-2.5 rounded-2xl bg-slate-900 border border-white/15 text-white hover:border-amber-400 hover:text-amber-300 text-xs font-semibold flex items-center space-x-2 transition shadow-md">
+                <div class="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
+                    <a href="https://www.tiktok.com/@lenterakita" target="_blank" class="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl sm:rounded-2xl bg-slate-900 border border-white/15 text-white hover:border-amber-400 hover:text-amber-300 text-xs font-semibold flex items-center space-x-2 transition shadow-md">
                         <i class="fa-brands fa-tiktok text-sm"></i>
                         <span>TikTok @lenterakita</span>
                     </a>
-                    <a href="https://www.instagram.com/lenterakita" target="_blank" class="px-4 py-2.5 rounded-2xl bg-slate-900 border border-white/15 text-white hover:border-amber-400 hover:text-amber-300 text-xs font-semibold flex items-center space-x-2 transition shadow-md">
+                    <a href="https://www.instagram.com/lenterakita" target="_blank" class="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl sm:rounded-2xl bg-slate-900 border border-white/15 text-white hover:border-amber-400 hover:text-amber-300 text-xs font-semibold flex items-center space-x-2 transition shadow-md">
                         <i class="fa-brands fa-instagram text-sm text-rose-400"></i>
                         <span>Instagram @lenterakita</span>
                     </a>
-                    <a href="https://www.threads.net/@lenterakita" target="_blank" class="px-4 py-2.5 rounded-2xl bg-slate-900 border border-white/15 text-white hover:border-amber-400 hover:text-amber-300 text-xs font-semibold flex items-center space-x-2 transition shadow-md">
+                    <a href="https://www.threads.net/@lenterakita" target="_blank" class="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl sm:rounded-2xl bg-slate-900 border border-white/15 text-white hover:border-amber-400 hover:text-amber-300 text-xs font-semibold flex items-center space-x-2 transition shadow-md">
                         <i class="fa-brands fa-threads text-sm"></i>
                         <span>Threads @lenterakita</span>
                     </a>
                 </div>
 
                 <!-- Direct WhatsApp Banner -->
-                <div class="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div class="text-left">
+                <div class="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+                    <div>
                         <p class="text-xs font-bold text-amber-300">Tempahan Terus & Pertanyaan Pantas</p>
                         <p class="text-[11px] text-slate-400">WhatsApp: <strong class="text-white">011-1174 5567</strong></p>
                     </div>
-                    <a href="https://wa.me/601111745567?text=Hai%20LenteraKita,%20saya%20ingin%20berbincang%20mengenai%20slot%20Digital%20Memory%20Wall%20untuk%20majlis%20saya." target="_blank" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs flex items-center space-x-2 shadow-lg transition">
+                    <a href="https://wa.me/601111745567?text=Hai%20LenteraKita,%20saya%20ingin%20berbincang%20mengenai%20slot%20Digital%20Memory%20Wall%20untuk%20majlis%20saya." target="_blank" class="w-full sm:w-auto px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs flex items-center justify-center space-x-2 shadow-lg transition active:scale-95">
                         <i class="fa-brands fa-whatsapp text-base"></i>
                         <span>Chat WhatsApp Sekarang</span>
                     </a>
@@ -450,13 +451,13 @@
         </section>
 
         <!-- Landing Footer -->
-        <footer class="border-t border-white/10 bg-slate-950/80 py-6 text-center text-xs text-slate-500 space-y-2">
+        <footer class="border-t border-white/10 bg-slate-950/80 py-6 text-center text-xs text-slate-500 space-y-2 w-full">
             <p>&copy; 2026 LenteraKita. Hak Cipta Terpelihara. Sentuhan Elegan Memori Majlis Anda.</p>
             <p><a href="admin.html" class="text-amber-400/60 hover:text-amber-300 underline text-[11px]"><i class="fa-solid fa-lock mr-1"></i> Log Masuk Super Admin</a></p>
         </footer>
 
         <!-- Floating WhatsApp Button -->
-        <a href="https://wa.me/601111745567?text=Salam%20LenteraKita,%20saya%20ingin%20bertanya%20tentang%20tempahan%20majlis." target="_blank" class="fixed bottom-6 right-6 z-50 bg-emerald-500 hover:bg-emerald-400 text-white w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-2xl transition transform hover:scale-110 active:scale-95 border-2 border-white/20" title="Chat WhatsApp (011-1174 5567)">
+        <a href="https://wa.me/601111745567?text=Salam%20LenteraKita,%20saya%20ingin%20bertanya%20tentang%20tempahan%20majlis." target="_blank" class="fixed bottom-5 right-4 sm:bottom-6 sm:right-6 z-50 bg-emerald-500 hover:bg-emerald-400 text-white w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-xl sm:text-2xl shadow-2xl transition transform hover:scale-110 active:scale-95 border-2 border-white/20" title="Chat WhatsApp (011-1174 5567)">
             <i class="fa-brands fa-whatsapp"></i>
         </a>
     </div>
@@ -465,20 +466,20 @@
     <!-- GUEST APP WRAPPER (Paparan Tetamu Majlis Terpilih) -->
     <!-- Aktif apabila ada parameter event (?event=...) -->
     <!-- ========================================================= -->
-    <div id="guestAppWrapper" class="hidden min-h-screen flex flex-col pb-24 relative z-10">
+    <div id="guestAppWrapper" class="hidden min-h-screen w-full max-w-full overflow-x-hidden flex flex-col pb-24 relative z-10">
 
         <!-- Top Instagram Header -->
-        <header class="bg-slate-950/80 backdrop-blur-md border-b border-white/10 sticky top-0 z-40 px-4 py-3 flex justify-between items-center shadow-lg">
-            <div class="flex items-center space-x-2">
-                <a href="index.html" title="Kembali ke Laman Utama LenteraKita">
+        <header class="bg-slate-950/80 backdrop-blur-md border-b border-white/10 sticky top-0 z-40 px-3 sm:px-4 py-2.5 sm:py-3 flex justify-between items-center shadow-lg w-full">
+            <div class="flex items-center space-x-2 min-w-0 flex-1 overflow-hidden pr-2">
+                <a href="index.html" title="Kembali ke Laman Utama LenteraKita" class="flex-shrink-0">
                     <img src="lenteraLogo.png" alt="Logo" class="w-8 h-8 rounded-lg object-contain bg-slate-900 border border-amber-500/30" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3076/3076753.png'">
                 </a>
-                <div class="cursor-pointer" onclick="openProfileModal()">
-                    <h1 class="text-base font-serif font-bold text-gradient tracking-wide leading-none" id="disp-wedding-title">LenteraKita</h1>
-                    <span id="disp-table-badge" class="text-[9px] text-amber-300/80 font-mono hidden"></span>
+                <div class="cursor-pointer min-w-0" onclick="openProfileModal()">
+                    <h1 class="text-sm sm:text-base font-serif font-bold text-gradient tracking-wide leading-tight truncate max-w-[150px] xs:max-w-[200px] sm:max-w-xs" id="disp-wedding-title">LenteraKita</h1>
+                    <span id="disp-table-badge" class="text-[9px] text-amber-300/80 font-mono hidden truncate"></span>
                 </div>
             </div>
-            <div class="flex items-center space-x-2.5">
+            <div class="flex items-center space-x-2 flex-shrink-0">
                 <button onclick="toggleBackgroundAudio()" class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center justify-center text-xs hover:bg-amber-500/30 transition" title="Play/Pause Music">
                     <i id="audioIcon" class="fa-solid fa-music animate-pulse"></i>
                 </button>
@@ -491,7 +492,7 @@
 
         <!-- Sidebar Drawer -->
         <div id="sidebarOverlay" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden transition-opacity" onclick="toggleSidebar()"></div>
-        <aside id="appSidebar" class="fixed top-0 left-0 bottom-0 w-72 bg-slate-950 border-r border-white/10 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out p-6 flex flex-col justify-between">
+        <aside id="appSidebar" class="fixed top-0 left-0 bottom-0 w-72 max-w-[80vw] bg-slate-950 border-r border-white/10 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out p-6 flex flex-col justify-between">
             <div class="space-y-6">
                 <div class="flex justify-between items-center border-b border-white/10 pb-4">
                     <div class="flex items-center space-x-2">
@@ -528,10 +529,10 @@
         </aside>
 
         <!-- Main Guest Container -->
-        <main class="flex-grow max-w-md w-full mx-auto p-2 md:p-3 space-y-4 relative z-10">
+        <main class="flex-grow max-w-md w-full mx-auto p-2 sm:p-3 space-y-3 sm:space-y-4 relative z-10">
 
             <!-- Stories Highlights Bar -->
-            <div class="stories-container bg-slate-950/50 p-3 rounded-2xl border border-white/10 shadow-lg">
+            <div class="stories-container bg-slate-950/50 p-2.5 sm:p-3 rounded-2xl border border-white/10 shadow-lg w-full max-w-full">
                 <div class="flex flex-col items-center space-x-1 cursor-pointer flex-shrink-0" onclick="openCameraModal()">
                     <div class="story-ring">
                         <div class="story-inner bg-slate-900 flex items-center justify-center text-amber-300 text-lg">
@@ -544,24 +545,24 @@
             </div>
 
             <!-- Welcome Card -->
-            <div id="welcomeCardContainer" class="glass-card welcome-card-bg rounded-2xl p-5 text-center shadow-xl relative overflow-hidden">
+            <div id="welcomeCardContainer" class="glass-card welcome-card-bg rounded-2xl p-4 sm:p-5 text-center shadow-xl relative overflow-hidden">
                 <div class="welcome-card-content space-y-2">
-                    <div class="inline-block px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px] font-semibold uppercase tracking-wider">
+                    <div class="inline-block px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider">
                         <i class="fa-solid fa-heart text-rose-500 mr-1"></i> Celebrating Event
                     </div>
-                    <h2 class="text-xl md:text-2xl font-serif font-bold text-amber-100" id="disp-groom-bride">Loading Event...</h2>
+                    <h2 class="text-lg sm:text-2xl font-serif font-bold text-amber-100" id="disp-groom-bride">Loading Event...</h2>
                     <p class="text-[11px] text-amber-200/80 italic" id="disp-wedding-date">Please wait a moment...</p>
                     <p class="text-xs text-amber-100/90 font-light" id="disp-welcome-msg">Capture and share your wonderful memories with us here.</p>
                 </div>
             </div>
 
             <!-- Tab Feed -->
-            <div id="tab-feed" class="space-y-4">
-                <div id="igFeedContainer" class="space-y-4"></div>
+            <div id="tab-feed" class="space-y-3 sm:space-y-4 w-full">
+                <div id="igFeedContainer" class="space-y-3 sm:space-y-4 w-full"></div>
             </div>
 
             <!-- Tab Explore (Album Grid) -->
-            <div id="tab-explore" class="space-y-3 hidden">
+            <div id="tab-explore" class="space-y-3 hidden w-full">
                 <div class="flex justify-between items-center bg-slate-950/80 p-2 rounded-xl border border-white/10 text-xs">
                     <span class="text-slate-400 px-2 font-medium">Event Album Gallery</span>
                     <div class="flex space-x-1">
@@ -574,7 +575,7 @@
             </div>
 
             <!-- Tab Voice Vault -->
-            <div id="tab-voice" class="space-y-4 hidden">
+            <div id="tab-voice" class="space-y-3 sm:space-y-4 hidden w-full">
                 <div class="flex justify-between items-center bg-slate-950/80 px-4 py-3 rounded-xl border border-white/10">
                     <h3 class="font-serif font-bold text-amber-300 text-sm">Voice Notes Vault</h3>
                     <span class="text-[10px] text-slate-400">Audio Wishes</span>
@@ -583,18 +584,18 @@
                 <div class="glass-card rounded-2xl p-4 shadow-xl space-y-3 text-xs">
                     <label class="block font-bold text-amber-200">Record Your Voice Message</label>
                     <div class="bg-slate-900/80 border border-white/15 rounded-xl p-4 flex flex-col items-center justify-center space-y-3">
-                        <button type="button" id="recordBtn" onclick="toggleRecording()" class="w-12 h-12 rounded-full bg-red-600 text-white flex items-center justify-center shadow-lg text-lg"><i class="fa-solid fa-microphone"></i></button>
+                        <button type="button" id="recordBtn" onclick="toggleRecording()" class="w-12 h-12 rounded-full bg-red-600 text-white flex items-center justify-center shadow-lg text-lg active:scale-95 transition"><i class="fa-solid fa-microphone"></i></button>
                         <div class="text-center">
                             <p id="recordStatus" class="text-xs text-amber-200/80">Tekan mikrofon untuk mula merakam (Maks 30s)</p>
                             <p id="recordTimer" class="text-[11px] font-mono text-amber-400 hidden">00:00 / 00:30</p>
                         </div>
                         <div id="audioPreviewContainer" class="hidden w-full pt-2 space-y-2">
                             <audio id="audioPreview" controls class="w-full h-8 rounded-lg"></audio>
-                            <div class="flex space-x-2">
+                            <div class="flex flex-col sm:flex-row gap-2">
                                 <input type="text" id="voiceSenderName" placeholder="Nama Anda" class="flex-grow bg-slate-950 border border-white/15 rounded-lg px-2.5 py-1.5 text-white outline-none">
-                                <button type="button" onclick="submitVoiceNote()" class="px-3 py-1.5 bg-amber-500 text-slate-950 font-bold rounded-lg">Send Voice</button>
+                                <button type="button" onclick="submitVoiceNote()" class="px-3 py-1.5 bg-amber-500 text-slate-950 font-bold rounded-lg active:scale-95 transition">Send Voice</button>
                             </div>
-                            <button type="button" onclick="clearAudioRecording()" class="text-[10px] text-red-400 hover:underline block mx-auto">Delete & Re-record</button>
+                            <button type="button" onclick="clearAudioRecording()" class="text-[10px] text-red-400 hover:underline block mx-auto pt-1">Delete & Re-record</button>
                         </div>
                     </div>
                 </div>
@@ -618,11 +619,11 @@
     <!-- ========================================================= -->
 
     <!-- FULLSCREEN CAMERA STUDIO MODAL (Dazz Cam Filters + Gallery Upload) -->
-    <div id="cameraModal" class="fixed inset-0 bg-black z-50 hidden flex flex-col justify-between overflow-hidden">
-        <div class="absolute top-0 left-0 right-0 z-30 p-4 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent">
-            <button onclick="closeCameraModal()" class="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center text-lg"><i class="fa-solid fa-xmark"></i></button>
+    <div id="cameraModal" class="fixed inset-0 bg-black z-50 hidden flex flex-col justify-between overflow-hidden w-full h-full">
+        <div class="absolute top-0 left-0 right-0 z-30 p-3 sm:p-4 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent">
+            <button onclick="closeCameraModal()" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center text-base sm:text-lg"><i class="fa-solid fa-xmark"></i></button>
             <span id="capturedCountBadge" class="px-3 py-1 bg-amber-500/80 text-slate-950 font-bold rounded-full text-xs">0 Photos</span>
-            <button onclick="openWishesPopup()" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-bold rounded-full text-xs shadow-lg flex items-center space-x-1.5"><span>Next (✓)</span> <i class="fa-solid fa-arrow-right"></i></button>
+            <button onclick="openWishesPopup()" class="px-3.5 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-bold rounded-full text-xs shadow-lg flex items-center space-x-1.5 active:scale-95 transition"><span>Next (✓)</span> <i class="fa-solid fa-arrow-right"></i></button>
         </div>
         
         <div class="relative w-full h-full flex items-center justify-center bg-black">
@@ -630,9 +631,9 @@
             <canvas id="cameraCanvas" class="hidden"></canvas>
         </div>
 
-        <div class="absolute bottom-0 left-0 right-0 z-30 pb-6 pt-10 px-4 bg-gradient-to-t from-black/90 via-black/60 to-transparent space-y-4">
-            <!-- Filter Chips -->
-            <div class="flex space-x-3 overflow-x-auto scrollbar-none pb-2 justify-center">
+        <div class="absolute bottom-0 left-0 right-0 z-30 pb-6 pt-8 px-3 sm:px-4 bg-gradient-to-t from-black/95 via-black/70 to-transparent space-y-3 sm:space-y-4">
+            <!-- Filter Chips (Scrollable start-aligned for mobile) -->
+            <div class="flex space-x-2 sm:space-x-3 overflow-x-auto scrollbar-none pb-1 justify-start sm:justify-center px-1">
                 <button onclick="setCameraFilter('filter-normal', this)" class="filter-chip px-3 py-1.5 rounded-full bg-amber-500 text-slate-950 font-bold text-[11px] flex-shrink-0">Normal</button>
                 <button onclick="setCameraFilter('filter-vintage', this)" class="filter-chip px-3 py-1.5 rounded-full bg-white/20 text-white font-medium text-[11px] flex-shrink-0">Vintage 98</button>
                 <button onclick="setCameraFilter('filter-warm', this)" class="filter-chip px-3 py-1.5 rounded-full bg-white/20 text-white font-medium text-[11px] flex-shrink-0">Golden Warm</button>
@@ -641,24 +642,24 @@
             </div>
 
             <!-- Camera Controls (Shutter, Switch, Gallery Upload) -->
-            <div class="flex items-center justify-around max-w-sm mx-auto">
+            <div class="flex items-center justify-around max-w-xs sm:max-w-sm mx-auto px-2">
                 <!-- Preview Thumb -->
-                <div id="thumbPreviewBox" class="w-12 h-12 rounded-xl bg-slate-800 border-2 border-white/30 overflow-hidden flex items-center justify-center">
+                <div id="thumbPreviewBox" class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-slate-800 border-2 border-white/30 overflow-hidden flex items-center justify-center flex-shrink-0">
                     <i class="fa-solid fa-image text-slate-400 text-sm"></i>
                 </div>
 
                 <!-- Shutter Snap Button -->
-                <button type="button" onclick="capturePhotoFromCamera()" class="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center p-1 bg-transparent active:scale-95 transition">
+                <button type="button" onclick="capturePhotoFromCamera()" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-white flex items-center justify-center p-1 bg-transparent active:scale-95 transition flex-shrink-0">
                     <div class="w-full h-full rounded-full bg-white"></div>
                 </button>
 
                 <!-- Switch Camera Facing -->
-                <button type="button" onclick="switchCameraFacing()" class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center text-sm" title="Tukar Kamera Depan/Belakang">
+                <button type="button" onclick="switchCameraFacing()" class="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center text-sm flex-shrink-0" title="Tukar Kamera Depan/Belakang">
                     <i class="fa-solid fa-rotate"></i>
                 </button>
 
                 <!-- Upload from Gallery Picker Button -->
-                <label for="galleryFileInput" class="w-12 h-12 rounded-full bg-amber-500/30 border border-amber-400/50 text-amber-300 flex items-center justify-center text-base cursor-pointer hover:bg-amber-500/40 transition shadow-lg" title="Pilih Dari Galeri Telefon">
+                <label for="galleryFileInput" class="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-amber-500/30 border border-amber-400/50 text-amber-300 flex items-center justify-center text-base cursor-pointer hover:bg-amber-500/40 transition shadow-lg flex-shrink-0 active:scale-95" title="Pilih Dari Galeri Telefon">
                     <i class="fa-solid fa-photo-film"></i>
                     <input type="file" id="galleryFileInput" accept="image/*" multiple class="hidden" onchange="handleGalleryUpload(event)">
                 </label>
@@ -667,8 +668,8 @@
     </div>
 
     <!-- POPUP WISHES MODAL -->
-    <div id="wishesPopupModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[60] hidden flex items-center justify-center p-4">
-        <div class="glass-card max-w-sm w-full rounded-2xl p-5 space-y-4 shadow-2xl border border-amber-500/30 text-xs relative max-h-[92vh] overflow-y-auto">
+    <div id="wishesPopupModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[60] hidden flex items-center justify-center p-3 sm:p-4">
+        <div class="glass-card max-w-sm w-full rounded-2xl p-4 sm:p-5 space-y-3.5 sm:space-y-4 shadow-2xl border border-amber-500/30 text-xs relative max-h-[92vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b border-white/10 pb-2">
                 <h3 class="font-serif font-bold text-amber-300 text-sm">Add Wishes & Submit</h3>
                 <button onclick="closeWishesPopup()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -738,7 +739,7 @@
     </div>
 
     <!-- DETAIL MODAL -->
-    <div id="detailModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div id="detailModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-4">
         <div class="glass-card max-w-sm w-full rounded-2xl p-4 relative space-y-3 max-h-[90vh] overflow-y-auto">
             <button onclick="closeDetailModal()" class="absolute top-3 right-3 text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             <div id="modalContent" class="space-y-3"></div>
@@ -746,8 +747,8 @@
     </div>
 
     <!-- EVENT INFO / PROFILE MODAL (Diaktifkan bila tekan ikon Profil) -->
-    <div id="profileModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="glass-card max-w-sm w-full rounded-2xl p-5 relative space-y-4 border border-amber-500/30 text-xs">
+    <div id="profileModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-4">
+        <div class="glass-card max-w-sm w-full rounded-2xl p-4 sm:p-5 relative space-y-3.5 sm:space-y-4 border border-amber-500/30 text-xs">
             <div class="flex justify-between items-center border-b border-white/10 pb-2">
                 <div class="flex items-center space-x-2">
                     <img src="lenteraLogo.png" class="w-7 h-7 rounded-lg object-contain bg-slate-900 border border-amber-500/30">
@@ -776,7 +777,7 @@
                 </div>
 
                 <div class="space-y-2 pt-2">
-                    <button onclick="copyCurrentEventLink()" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-amber-300 font-semibold rounded-xl border border-amber-500/30 flex items-center justify-center space-x-2">
+                    <button onclick="copyCurrentEventLink()" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-amber-300 font-semibold rounded-xl border border-amber-500/30 flex items-center justify-center space-x-2 active:scale-95 transition">
                         <i class="fa-solid fa-share-nodes"></i>
                         <span>Kongsi / Salin Pautan Majlis</span>
                     </button>
@@ -789,13 +790,13 @@
     </div>
 
     <!-- TV SLIDESHOW MODAL -->
-    <div id="tvModal" class="fixed inset-0 bg-slate-950 z-50 hidden flex flex-col justify-between p-6">
+    <div id="tvModal" class="fixed inset-0 bg-slate-950 z-50 hidden flex flex-col justify-between p-4 sm:p-6">
         <div class="flex justify-between items-center border-b border-white/10 pb-4">
-            <h2 class="text-xl font-serif font-bold text-amber-300">TV Mode (Live Slideshow)</h2>
+            <h2 class="text-lg sm:text-xl font-serif font-bold text-amber-300">TV Mode (Live Slideshow)</h2>
             <button onclick="closeTvMode()" class="px-3 py-1.5 bg-slate-900 border border-white/20 rounded-xl text-xs text-slate-300">Close</button>
         </div>
-        <div class="flex-grow flex items-center justify-center p-4">
-            <div id="tvSlideContainer" class="max-w-2xl w-full glass-card p-8 rounded-3xl text-center space-y-4 shadow-2xl border border-amber-500/30"></div>
+        <div class="flex-grow flex items-center justify-center p-2 sm:p-4">
+            <div id="tvSlideContainer" class="max-w-2xl w-full glass-card p-5 sm:p-8 rounded-2xl sm:rounded-3xl text-center space-y-4 shadow-2xl border border-amber-500/30"></div>
         </div>
         <div class="text-center text-[10px] text-amber-400/60 uppercase tracking-widest">LenteraKita Live Display</div>
     </div>

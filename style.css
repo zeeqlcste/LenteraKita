@@ -3,6 +3,20 @@
     --accent-color: #E5C158;
 }
 
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden !important;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    -webkit-text-size-adjust: 100%;
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
     width: 6px;
@@ -42,6 +56,7 @@
     z-index: -1;
     overflow: hidden;
     background-color: var(--bg-color);
+    pointer-events: none;
 }
 
 .dynamic-bg-image {
@@ -87,14 +102,16 @@
     gap: 12px;
     padding: 4px 2px;
     scrollbar-width: none;
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
 }
 .stories-container::-webkit-scrollbar {
     display: none;
 }
 
 .story-ring {
-    width: 64px;
-    height: 64px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
     display: flex;
@@ -126,12 +143,12 @@
 /* Instagram Dynamic Bottom Navigation Bar */
 .ig-bottom-nav {
     position: fixed;
-    bottom: 16px;
+    bottom: max(14px, env(safe-area-inset-bottom, 14px));
     left: 50%;
     transform: translateX(-50%);
-    width: 90%;
+    width: calc(100% - 24px);
     max-width: 400px;
-    background: rgba(15, 23, 42, 0.85);
+    background: rgba(15, 23, 42, 0.90);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.15);
@@ -139,9 +156,9 @@
     display: flex;
     justify-content: space-around;
     align-items: center;
-    padding: 10px 20px;
+    padding: 8px 16px;
     z-index: 50;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
 }
 
 .ig-nav-item {
@@ -151,6 +168,7 @@
     background: none;
     border: none;
     cursor: pointer;
+    padding: 6px;
 }
 
 .ig-nav-item.active, .ig-nav-item:hover {
@@ -213,15 +231,15 @@
     position: fixed;
     bottom: 24px;
     right: 24px;
-    width: 60px;
-    height: 60px;
+    width: 56px;
+    height: 56px;
     background: linear-gradient(135deg, #E5C158 0%, #B38728 100%);
     color: #1A0307;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: 22px;
     box-shadow: 0 10px 25px rgba(229, 193, 88, 0.4);
     z-index: 40;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -241,6 +259,15 @@
 .filter-cyber { filter: hue-rotate(90deg) saturate(2) contrast(1.2); }
 
 /* Animated Marquee for Wedding Testimonials */
+.marquee-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden !important;
+    position: relative;
+    mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+}
+
 @keyframes marqueeScroll {
     0% { transform: translateX(0%); }
     100% { transform: translateX(-50%); }
@@ -249,7 +276,8 @@
 .animate-marquee {
     display: flex;
     width: max-content;
-    animation: marqueeScroll 28s linear infinite;
+    animation: marqueeScroll 26s linear infinite;
+    will-change: transform;
 }
 
 .animate-marquee:hover {
@@ -266,3 +294,8 @@
     animation: goldPulse 3.5s infinite ease-in-out;
 }
 
+#landingDashboard, #guestAppWrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden !important;
+}
