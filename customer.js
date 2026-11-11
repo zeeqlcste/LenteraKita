@@ -13,8 +13,12 @@ try {
     console.warn("Firebase warning.", e);
 }
 
+// Semak URL Parameter (?event=... & ?table=...)
 const urlParams = new URLSearchParams(window.location.search);
-let currentEventId = urlParams.get('event') || 'walimah-haziq';
+let currentEventId = urlParams.get('event');
+let currentTable = urlParams.get('table') || urlParams.get('meja') || '';
+let currentEventConfig = null;
+
 let memoryFeed = [];
 let selectedMediaFiles = [];
 let mediaRecorder = null;
@@ -30,17 +34,111 @@ let currentFacingMode = 'environment';
 let activeFilterClass = 'filter-normal';
 let sliderIndexes = {};
 
+// Instagram Story Viewer States
+let activeStoryItems = [];
+let currentStoryIndex = 0;
+let storyTimer = null;
+
+// Showcase Carousel States (Landing Page)
+let currentShowcaseIndex = 0;
+let showcaseInterval = null;
+
 document.addEventListener('DOMContentLoaded', () => {
-    initGuestView();
+    initAppRouting();
 });
 
-function initGuestView() {
-    if (!eventsRef) return;
+// Routing pintar antara Landing Page & Guest Event View
+function initAppRouting() {
+    const landingDashboard = document.getElementById('landingDashboard');
+    const guestAppWrapper = document.getElementById('guestAppWrapper');
 
+    if (!currentEventId) {
+        // Paparkan Landing Dashboard rasmi jika tiada event parameter
+        if (landingDashboard) landingDashboard.classList.remove('hidden');
+        if (guestAppWrapper) guestAppWrapper.classList.add('hidden');
+        document.title = "LenteraKita - Digital Memory Wall & Buku Tetamu Moden";
+        initShowcaseAutoPlay();
+    } else {
+        // Paparkan Paparan Tetamu Majlis jika ada ?event=...
+        if (landingDashboard) landingDashboard.classList.add('hidden');
+        if (guestAppWrapper) guestAppWrapper.classList.remove('hidden');
+        initGuestView();
+    }
+}
+
+// Logik Showcase Bergerak / Auto-Rotating Carousel di Landing Page
+function initShowcaseAutoPlay() {
+    if (showcaseInterval) clearInterval(showcaseInterval);
+    showcaseInterval = setInterval(() => {
+        nextShowcaseSlide();
+    }, 4500);
+}
+
+function setShowcaseSlide(index) {
+    const totalSlides = 4;
+    currentShowcaseIndex = (index + totalSlides) % totalSlides;
+    
+    for (let i = 0; i < totalSlides; i++) {
+        const slide = document.getElementById(`showcase-slide-${i}`);
+        const dot = document.getElementById(`showcase-dot-${i}`);
+        if (slide) {
+            if (i === currentShowcaseIndex) {
+                slide.classList.remove('opacity-0', 'z-0');
+                slide.classList.add('opacity-100', 'z-10');
+            } else {
+                slide.classList.remove('opacity-100', 'z-10');
+                slide.classList.add('opacity-0', 'z-0');
+            }
+        }
+        if (dot) {
+            if (i === currentShowcaseIndex) {
+                dot.className = "px-2.5 sm:px-3 py-1 rounded-full text-[10px] font-bold bg-amber-500 text-slate-950 transition";
+            } else {
+                dot.className = "px-2.5 sm:px-3 py-1 rounded-full text-[10px] font-bold bg-white/15 text-slate-300 hover:bg-white/25 transition";
+            }
+        }
+    }
+}
+
+function nextShowcaseSlide() {
+    setShowcaseSlide(currentShowcaseIndex + 1);
+}
+
+function prevShowcaseSlide() {
+    setShowcaseSlide(currentShowcaseIndex - 1);
+}
+
+// Carian Kod Acara dari Landing Page
+function handleLandingEventSearch(e) {
+    if (e) e.preventDefault();
+    const input = document.getElementById('landingEventCodeInput');
+    if (!input || !input.value.trim()) return;
+    const code = input.value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-');
+    window.location.href = `index.html?event=${encodeURIComponent(code)}`;
+}
+
+function initGuestView() {
+    if (!eventsRef || !currentEventId) return;
+
+    // Auto-isi nombor meja daripada URL jika ada (?table=M05)
+    if (currentTable) {
+        const tableInput = document.getElementById('tableNo');
+        const tableBadge = document.getElementById('disp-table-badge');
+        if (tableInput) tableInput.value = currentTable;
+        if (tableBadge) {
+            tableBadge.innerText = `Meja: ${currentTable}`;
+            tableBadge.classList.remove('hidden');
+        }
+    }
+
+    // Dengar konfigurasi tema & maklumat majlis
     eventsRef.child(currentEventId).child('config').on('value', (snapshot) => {
         const cfg = snapshot.val();
         if (cfg) {
+            currentEventConfig = cfg;
             applyDynamicTheme(cfg);
+            document.title = `${cfg.eventTitle || 'Majlis'} - LenteraKita Memory Wall`;
+
             const titleEl = document.getElementById('disp-wedding-title');
             const groomEl = document.getElementById('disp-groom-bride');
             const dateEl = document.getElementById('disp-wedding-date');
@@ -49,7 +147,7 @@ function initGuestView() {
             if (titleEl) titleEl.innerText = cfg.title || "LenteraKita";
             if (groomEl) groomEl.innerText = cfg.eventTitle || "Wedding Event";
             if (dateEl) dateEl.innerText = `${cfg.date || ''} • ${cfg.venue || ''}`;
-            if (welcomeEl) welcomeEl.innerText = cfg.welcomeMsg || "Welcome to our celebration!";
+            if (welcomeEl) welcomeEl.innerText = cfg.welcomeMsg || "Selamat datang ke majlis kami!";
 
             const welcomeCard = document.getElementById('welcomeCardContainer');
             const bgElement = document.getElementById('dynamicBg');
@@ -68,11 +166,14 @@ function initGuestView() {
             const bgAudio = document.getElementById('bgAudio');
             if (bgAudio && cfg.audioUrl && !bgAudio.src) {
                 bgAudio.src = cfg.audioUrl;
-                bgAudio.play().catch(() => console.log("Auto-play blocked."));
+                bgAudio.play().catch(() => {
+                    console.log("Auto-play blocked by browser policy. User can click music button.");
+                });
             }
         }
     });
 
+    // Dengar suapan memori tetamu secara masa nyata
     eventsRef.child(currentEventId).child('memories').on('value', (snapshot) => {
         const data = snapshot.val();
         memoryFeed = [];
@@ -120,7 +221,7 @@ function switchTab(tabName) {
         openTvMode();
         return;
     }
-    ['feed', 'explore', 'capture', 'voice'].forEach(t => {
+    ['feed', 'explore', 'voice'].forEach(t => {
         const el = document.getElementById(`tab-${t}`);
         const nav = document.getElementById(`nav-${t}`);
         if (el) el.classList.add('hidden');
@@ -163,8 +264,9 @@ async function openCameraModal() {
         });
         video.srcObject = cameraStream;
     } catch (err) {
-        alert("Camera access denied or unavailable. Sila pastikan guna HTTPS / Localhost.");
-        closeCameraModal();
+        console.warn("Akses kamera disekat atau gagal:", err);
+        // Fallback mesra pengguna: beritahu pengguna mereka boleh pilih gambar dari galeri
+        alert("Kebenaran kamera tidak aktif atau disekat oleh pelayar. Anda masih boleh memilih gambar daripada Galeri Telefon anda!");
     }
 }
 
@@ -194,19 +296,35 @@ function switchCameraFacing() {
     openCameraModal();
 }
 
+// Tangkap gambar dengan mampatan saiz automatik (max 1200px, JPEG 0.80)
 function capturePhotoFromCamera() {
     const video = document.getElementById('cameraVideo');
     const canvas = document.getElementById('cameraCanvas');
     if (!video || !canvas) return;
 
-    canvas.width = video.videoWidth || 720;
-    canvas.height = video.videoHeight || 1280;
+    let width = video.videoWidth || 720;
+    let height = video.videoHeight || 1280;
+    const maxDim = 1200;
+
+    // Rescale jika saiz terlalu besar
+    if (width > maxDim || height > maxDim) {
+        if (width > height) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+        } else {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+        }
+    }
+
+    canvas.width = width;
+    canvas.height = height;
     const ctx = canvas.getContext('2d');
 
     ctx.filter = window.getComputedStyle(video).getPropertyValue('filter');
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    const dataUrl = canvas.toDataURL('image/jpeg', 0.90);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.80);
     selectedMediaFiles.push(dataUrl);
 
     updateCameraThumbBadge();
@@ -219,21 +337,118 @@ function capturePhotoFromCamera() {
     }
 }
 
+// Muat naik gambar dari Galeri Telefon dengan mampatan automatik
+async function handleGalleryUpload(e) {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (!file.type.startsWith('image/')) continue;
+        try {
+            const compressed = await compressImageFile(file, 1200, 0.78);
+            selectedMediaFiles.push(compressed);
+        } catch (err) {
+            console.error("Gagal mampatkan gambar galeri:", err);
+        }
+    }
+
+    updateCameraThumbBadge();
+    const thumbBox = document.getElementById('thumbPreviewBox');
+    if (thumbBox && selectedMediaFiles.length > 0) {
+        thumbBox.innerHTML = `<img src="${selectedMediaFiles[selectedMediaFiles.length - 1]}" class="w-full h-full object-cover">`;
+    }
+    e.target.value = '';
+}
+
+function compressImageFile(file, maxDim = 1200, quality = 0.78) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+                let width = img.width;
+                let height = img.height;
+                if (width > maxDim || height > maxDim) {
+                    if (width > height) {
+                        height = Math.round((height * maxDim) / width);
+                        width = maxDim;
+                    } else {
+                        width = Math.round((width * maxDim) / height);
+                        height = maxDim;
+                    }
+                }
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                resolve(canvas.toDataURL('image/jpeg', quality));
+            };
+            img.onerror = reject;
+            img.src = event.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+// Tambah Cop Bingkai Watermark Pengantin
+function applyWatermarkToImage(dataUrl, eventTitle) {
+    return new Promise((resolve) => {
+        if (!eventTitle) return resolve(dataUrl);
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+
+            // Lapisan gelap bawah
+            const barHeight = Math.max(38, Math.round(canvas.height * 0.065));
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
+            ctx.fillRect(0, canvas.height - barHeight, canvas.width, barHeight);
+
+            // Garisan emas
+            ctx.strokeStyle = '#E5C158';
+            ctx.lineWidth = Math.max(2, Math.round(canvas.height * 0.004));
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height - barHeight);
+            ctx.lineTo(canvas.width, canvas.height - barHeight);
+            ctx.stroke();
+
+            // Teks Watermark
+            const fontSize = Math.max(13, Math.round(barHeight * 0.42));
+            ctx.font = `600 ${fontSize}px sans-serif`;
+            ctx.fillStyle = '#E5C158';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(`✨ LenteraKita • ${eventTitle}`, 16, canvas.height - (barHeight / 2));
+
+            resolve(canvas.toDataURL('image/jpeg', 0.82));
+        };
+        img.onerror = () => resolve(dataUrl);
+        img.src = dataUrl;
+    });
+}
+
 function updateCameraThumbBadge() {
     const badge = document.getElementById('capturedCountBadge');
     if (badge) badge.innerText = `${selectedMediaFiles.length} Photos`;
 }
 
-function proceedToWishesStep() {
+// --- POPUP WISHES MODAL ---
+function openWishesPopup() {
     if (selectedMediaFiles.length === 0) {
-        return alert("Sila tangkap sekurang-kurangnya satu gambar terlebih dahulu!");
+        return alert("Sila tangkap atau pilih sekurang-kurangnya satu gambar terlebih dahulu!");
     }
     closeCameraModal();
-    switchTab('capture');
 
-    const previewContainer = document.getElementById('mediaPreviewContainer');
+    const popup = document.getElementById('wishesPopupModal');
+    const previewContainer = document.getElementById('popupMediaPreview');
+    if (popup) popup.classList.remove('hidden');
+
     if (previewContainer) {
-        previewContainer.classList.remove('hidden');
         previewContainer.innerHTML = selectedMediaFiles.map(url => `
             <div class="relative aspect-square rounded-lg overflow-hidden border border-white/20">
                 <img src="${url}" class="w-full h-full object-cover">
@@ -242,25 +457,76 @@ function proceedToWishesStep() {
     }
 }
 
-function handleFileSelect(event) {
-    const files = event.target.files;
-    if (!files || files.length === 0) return;
-    const previewContainer = document.getElementById('mediaPreviewContainer');
-    if (!previewContainer) return;
-
-    previewContainer.classList.remove('hidden');
-
-    Array.from(files).forEach((file) => {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            selectedMediaFiles.push(e.target.result);
-            previewContainer.innerHTML += `<div class="relative aspect-square rounded-lg overflow-hidden border border-white/20"><img src="${e.target.result}" class="w-full h-full object-cover"></div>`;
-        };
-        reader.readAsDataURL(file);
-    });
+function closeWishesPopup() {
+    const popup = document.getElementById('wishesPopupModal');
+    if (popup) popup.classList.add('hidden');
 }
 
-// --- Voice Vault Recording (Dibaiki & Dioptimumkan) ---
+// --- INSTAGRAM STORY VIEWER (Tap-to-advance) ---
+function openStoryViewer(startIndex = 0) {
+    activeStoryItems = memoryFeed.filter(item => item.media && item.media.length > 0);
+    if (activeStoryItems.length === 0) return alert("Tiada story gambar untuk dipaparkan.");
+
+    currentStoryIndex = startIndex;
+    const modal = document.getElementById('storyViewerModal');
+    if (modal) modal.classList.remove('hidden');
+
+    renderCurrentStorySlide();
+}
+
+function closeStoryViewer() {
+    const modal = document.getElementById('storyViewerModal');
+    if (modal) modal.classList.add('hidden');
+    if (storyTimer) clearTimeout(storyTimer);
+}
+
+function renderCurrentStorySlide() {
+    if (storyTimer) clearTimeout(storyTimer);
+    if (currentStoryIndex < 0) currentStoryIndex = 0;
+    if (currentStoryIndex >= activeStoryItems.length) {
+        closeStoryViewer();
+        return;
+    }
+
+    const item = activeStoryItems[currentStoryIndex];
+    const imgEl = document.getElementById('storyMediaImg');
+    const avatarEl = document.getElementById('storyAvatar');
+    const usernameEl = document.getElementById('storyUsername');
+    const metaEl = document.getElementById('storyMeta');
+    const footerEl = document.getElementById('storyWishFooter');
+    const barsContainer = document.getElementById('storyProgressBars');
+
+    if (imgEl && item.media && item.media[0]) imgEl.src = item.media[0];
+    if (avatarEl) avatarEl.innerText = item.name ? item.name.charAt(0).toUpperCase() : 'G';
+    if (usernameEl) usernameEl.innerText = item.name || 'Guest';
+    if (metaEl) metaEl.innerText = `Table: ${item.table || '-'} • ${item.dateStr || ''}`;
+    if (footerEl) footerEl.innerHTML = item.wish ? `"${escapeHtml(item.wish)}"` : '<span class="italic opacity-60">Tiada ucapan</span>';
+
+    // Progress Bars atas ala Instagram
+    if (barsContainer) {
+        barsContainer.innerHTML = activeStoryItems.map((_, idx) => `
+            <div class="h-1 flex-grow rounded-full bg-white/30 overflow-hidden">
+                <div class="h-full bg-white transition-all duration-linear ${idx < currentStoryIndex ? 'w-full' : idx === currentStoryIndex ? 'w-full animate-[pulse_1s_infinite]' : 'w-0'}"></div>
+            </div>
+        `).join('');
+    }
+
+    storyTimer = setTimeout(() => {
+        nextStorySlide();
+    }, 5000);
+}
+
+function nextStorySlide() {
+    currentStoryIndex++;
+    renderCurrentStorySlide();
+}
+
+function prevStorySlide() {
+    currentStoryIndex--;
+    renderCurrentStorySlide();
+}
+
+// --- Voice Vault Recording ---
 async function toggleRecording() {
     const recordBtn = document.getElementById('recordBtn');
     const statusText = document.getElementById('recordStatus');
@@ -278,14 +544,12 @@ async function toggleRecording() {
         }
 
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        
-        // Pilih format yang disokong oleh pelayar (Chrome/Safari)
         let options = { mimeType: 'audio/webm' };
         if (!MediaRecorder.isTypeSupported('audio/webm')) {
             if (MediaRecorder.isTypeSupported('audio/mp4')) {
                 options = { mimeType: 'audio/mp4' };
             } else {
-                options = {}; // Guna default pelayar
+                options = {};
             }
         }
 
@@ -293,9 +557,7 @@ async function toggleRecording() {
         audioChunks = [];
 
         mediaRecorder.ondataavailable = (e) => {
-            if (e.data && e.data.size > 0) {
-                audioChunks.push(e.data);
-            }
+            if (e.data && e.data.size > 0) audioChunks.push(e.data);
         };
 
         mediaRecorder.onstart = () => {
@@ -305,9 +567,7 @@ async function toggleRecording() {
             recordSeconds = 0;
             recordTimerInterval = setInterval(() => {
                 recordSeconds++;
-                if (recordSeconds >= 30) {
-                    toggleRecording(); // Auto stop lepas 30 saat
-                }
+                if (recordSeconds >= 30) toggleRecording();
             }, 1000);
         };
 
@@ -331,8 +591,7 @@ async function toggleRecording() {
 
         mediaRecorder.start();
     } catch (err) {
-        console.error("Mic error:", err);
-        alert("Gagal mengakses mikrofon. Pastikan kebenaran mikrofon (Microphone Permission) telah diberikan pada pelayar web anda.");
+        alert("Gagal mengakses mikrofon. Sila benarkan akses mikrofon dalam tetapan pelayar anda.");
     }
 }
 
@@ -354,7 +613,7 @@ function submitVoiceNote() {
 
     const newVoiceMemory = {
         name: name,
-        table: 'Voice Vault',
+        table: currentTable || 'Voice Vault',
         wish: 'Voice Note Wish 🎙️',
         media: null,
         audio: recordedAudioBase64,
@@ -365,10 +624,10 @@ function submitVoiceNote() {
     };
 
     eventsRef.child(currentEventId).child('memories').push(newVoiceMemory).then(() => {
-        alert("Voice note berjaya dihantar!");
+        alert("Pesanan suara berjaya dihantar ke buku tetamu!");
         clearAudioRecording();
         if (nameInput) nameInput.value = '';
-        switchTab('feed');
+        switchTab('voice');
     });
 }
 
@@ -394,27 +653,38 @@ function renderVoiceVault() {
     `).join('');
 }
 
-function handleFormSubmit(e) {
+// Menghantar memori tetamu ke Firebase
+async function handleFormSubmit(e) {
     e.preventDefault();
     const nameInput = document.getElementById('guestName');
     const tableInput = document.getElementById('tableNo');
     const wishInput = document.getElementById('guestWish');
+    const watermarkCheck = document.getElementById('addWatermarkCheck');
     if (!nameInput) return;
 
     const name = nameInput.value.trim();
-    const table = tableInput ? tableInput.value.trim() : '';
+    const table = tableInput ? tableInput.value.trim() : (currentTable || 'Guest');
     const wish = wishInput ? wishInput.value.trim() : '';
     if (!name) return alert("Sila masukkan nama anda!");
 
     const submitBtn = document.getElementById('submitBtn');
     if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-2"></i> Sedang menghantar...`;
+        submitBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-2"></i> Sedang memproses...`;
+    }
+
+    // Jika pengguna memilih watermark, capkan pada gambar
+    let processedMedia = [...selectedMediaFiles];
+    if (watermarkCheck && watermarkCheck.checked && processedMedia.length > 0) {
+        const titleForWatermark = (currentEventConfig && currentEventConfig.eventTitle) ? currentEventConfig.eventTitle : 'Walimatulurus';
+        processedMedia = await Promise.all(processedMedia.map(url => applyWatermarkToImage(url, titleForWatermark)));
     }
 
     const newMemory = {
-        name, table: table || 'Guest', wish: wish || '',
-        media: selectedMediaFiles.length > 0 ? selectedMediaFiles : null,
+        name,
+        table: table || 'Guest',
+        wish: wish || '',
+        media: processedMedia.length > 0 ? processedMedia : null,
         audio: null,
         likes: 0,
         comments: [],
@@ -423,20 +693,26 @@ function handleFormSubmit(e) {
     };
 
     eventsRef.child(currentEventId).child('memories').push(newMemory).then(() => {
+        closeWishesPopup();
         resetForm();
         switchTab('feed');
+    }).catch(err => {
+        alert("Gagal menghantar ucapan. Sila cuba sebentar lagi.");
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `Submit Memory`;
+        }
     });
 }
 
 function resetForm() {
     const form = document.getElementById('guestForm');
     if (form) form.reset();
-    selectedMediaFiles = [];
-    const previewContainer = document.getElementById('mediaPreviewContainer');
-    if (previewContainer) {
-        previewContainer.innerHTML = '';
-        previewContainer.classList.add('hidden');
+    if (currentTable) {
+        const tableInput = document.getElementById('tableNo');
+        if (tableInput) tableInput.value = currentTable;
     }
+    selectedMediaFiles = [];
     const submitBtn = document.getElementById('submitBtn');
     if (submitBtn) {
         submitBtn.disabled = false;
@@ -444,7 +720,7 @@ function resetForm() {
     }
 }
 
-// --- Render Feed & Carousel Slider (Download Diperbaiki) ---
+// --- Render Feed & Stories Highlights ---
 function renderFeed() {
     const feedContainer = document.getElementById('igFeedContainer');
     const storiesBar = document.getElementById('storiesHighlightsBar');
@@ -457,10 +733,10 @@ function renderFeed() {
     }
 
     if (storiesBar) {
-        storiesBar.innerHTML = memoryFeed.map(item => {
+        storiesBar.innerHTML = memoryFeed.map((item, idx) => {
             const thumb = (item.media && item.media.length > 0) ? item.media[0] : 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=200';
             return `
-                <div class="flex flex-col items-center space-x-1 cursor-pointer flex-shrink-0" onclick="openDetailModal('${item.id}')">
+                <div class="flex flex-col items-center space-x-1 cursor-pointer flex-shrink-0" onclick="openStoryViewer(${idx})">
                     <div class="story-ring">
                         <div class="story-inner"><img src="${thumb}" alt="Story"></div>
                     </div>
@@ -494,11 +770,9 @@ function renderFeed() {
         }
 
         const commentsList = item.comments ? Object.values(item.comments).map(c => `<p class="text-[11px] text-slate-300"><strong class="text-amber-300">${escapeHtml(c.name)}:</strong> ${escapeHtml(c.text)}</p>`).join('') : '';
-
-        // Fungsi Download Diperbaiki menggunakan Blob supaya tidak terhalang oleh CORS pelayar
         const firstImgUrl = (item.media && item.media[0]) ? item.media[0] : '';
         const downloadBtnHtml = firstImgUrl ? `
-            <button onclick="downloadImage('${firstImgUrl}')" class="text-xs text-amber-300 bg-amber-500/20 px-2.5 py-1 rounded-lg border border-amber-500/30 hover:bg-amber-500/30" title="Muat turun gambar">
+            <button onclick="downloadImage('${firstImgUrl}')" class="text-xs text-amber-300 bg-amber-500/20 px-2.5 py-1 rounded-lg border border-amber-500/30 hover:bg-amber-500/30 transition" title="Muat turun gambar">
                 <i class="fa-solid fa-download mr-1"></i> Save
             </button>` : '';
 
@@ -541,8 +815,8 @@ function renderFeed() {
                 <div class="px-4 pt-1 space-y-1">
                     <div id="comments-box-${item.id}" class="space-y-1 max-h-24 overflow-y-auto">${commentsList}</div>
                     <div class="flex space-x-2 pt-1">
-                        <input type="text" id="comment-input-${item.id}" placeholder="Tambah komen..." class="flex-grow bg-slate-950 border border-white/10 rounded-lg px-2.5 py-1 text-[11px] text-white outline-none focus:border-amber-400">
-                        <button onclick="postComment('${item.id}')" class="px-3 py-1 bg-amber-500 text-slate-950 text-[11px] font-bold rounded-lg hover:bg-amber-400">Post</button>
+                        <input type="text" id="comment-input-${item.id}" placeholder="Tambah doa & komen..." class="flex-grow bg-slate-950 border border-white/10 rounded-lg px-2.5 py-1 text-[11px] text-white outline-none focus:border-amber-400">
+                        <button onclick="postComment('${item.id}')" class="px-3 py-1 bg-amber-500 text-slate-950 text-[11px] font-bold rounded-lg hover:bg-amber-400 transition">Post</button>
                     </div>
                 </div>
             </div>
@@ -552,7 +826,6 @@ function renderFeed() {
     renderExploreGrid();
 }
 
-// Fungsi Muat Turun Selamat (Mengelakkan isu CORS & Download Error)
 async function downloadImage(url) {
     try {
         const response = await fetch(url);
@@ -567,7 +840,6 @@ async function downloadImage(url) {
         window.URL.revokeObjectURL(blobUrl);
         document.body.removeChild(a);
     } catch (err) {
-        // Fallback jika fetch dihalang
         window.open(url, '_blank');
     }
 }
@@ -612,7 +884,7 @@ function postComment(itemId) {
     if (!input || !input.value.trim()) return;
 
     const commentText = input.value.trim();
-    const commenterName = prompt("Masukkan nama anda untuk komen:", "Guest") || "Guest";
+    const commenterName = prompt("Masukkan nama anda untuk komen:", "Tetamu") || "Tetamu";
 
     const newComment = { name: commenterName, text: commentText, timestamp: Date.now() };
     eventsRef.child(currentEventId).child('memories').child(itemId).child('comments').push(newComment).then(() => {
@@ -678,7 +950,6 @@ function openDetailModal(itemId) {
         `;
     }
     const detailModal = document.getElementById('detailModal');
-    if (detailModal) detailModal.classList.add('hidden'); // Fix typo to remove hidden
     if (detailModal) detailModal.classList.remove('hidden');
 }
 
@@ -687,10 +958,57 @@ function closeDetailModal() {
     if (detailModal) detailModal.classList.add('hidden');
 }
 
+// --- Maklumat Majlis (Profile Modal) ---
+function openProfileModal() {
+    const modal = document.getElementById('profileModal');
+    if (!modal) return;
+
+    const titleEl = document.getElementById('profileEventTitle');
+    const dateEl = document.getElementById('profileEventDate');
+    const venueEl = document.getElementById('profileEventVenue');
+    const memCountEl = document.getElementById('profileMemoriesCount');
+    const photoCountEl = document.getElementById('profilePhotosCount');
+
+    if (currentEventConfig) {
+        if (titleEl) titleEl.innerText = currentEventConfig.eventTitle || currentEventId;
+        if (dateEl) dateEl.innerText = currentEventConfig.date || '-';
+        if (venueEl) venueEl.innerText = currentEventConfig.venue || '-';
+    }
+
+    if (memCountEl) memCountEl.innerText = memoryFeed.length;
+    if (photoCountEl) {
+        let totalPhotos = 0;
+        memoryFeed.forEach(m => {
+            if (m.media && Array.isArray(m.media)) totalPhotos += m.media.length;
+        });
+        photoCountEl.innerText = totalPhotos;
+    }
+
+    modal.classList.remove('hidden');
+}
+
+function closeProfileModal() {
+    const modal = document.getElementById('profileModal');
+    if (modal) modal.classList.add('hidden');
+}
+
+function copyCurrentEventLink() {
+    const url = window.location.href;
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).then(() => {
+            alert("Pautan majlis berjaya disalin!");
+        }).catch(() => {
+            prompt("Salin pautan ini:", url);
+        });
+    } else {
+        prompt("Salin pautan ini:", url);
+    }
+}
+
 function toggleBackgroundAudio() {
     const bgAudio = document.getElementById('bgAudio');
     const audioIcon = document.getElementById('audioIcon');
-    if (!bgAudio || !bgAudio.src) return alert("Tiada muzik latar belakang ditetapkan.");
+    if (!bgAudio || !bgAudio.src) return alert("Tiada muzik latar belakang ditetapkan untuk majlis ini.");
     if (bgAudio.paused) {
         bgAudio.play();
         if (audioIcon) audioIcon.className = "fa-solid fa-music animate-pulse text-amber-300";
@@ -700,6 +1018,7 @@ function toggleBackgroundAudio() {
     }
 }
 
+// --- Live TV Mode Slideshow ---
 function openTvMode() {
     const tvModal = document.getElementById('tvModal');
     if (tvModal) tvModal.classList.remove('hidden');
@@ -724,7 +1043,7 @@ function renderTvSlide() {
     const container = document.getElementById('tvSlideContainer');
     if (!container) return;
     if (memoryFeed.length === 0) {
-        container.innerHTML = `<p class="text-slate-300 text-sm">Menunggu ucapan daripada tetamu...</p>`;
+        container.innerHTML = `<p class="text-slate-300 text-sm">Menunggu ucapan pertama daripada para tetamu...</p>`;
         return;
     }
     const item = memoryFeed[tvCurrentIndex];

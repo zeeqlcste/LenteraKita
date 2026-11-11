@@ -15,15 +15,15 @@
     <div id="adminLoginScreen" class="flex-grow flex items-center justify-center">
         <div class="glass-card max-w-sm w-full p-6 rounded-2xl space-y-4 shadow-2xl border border-amber-500/30">
             <div class="text-center space-y-1">
-                <img src="lenteraLogo.png" class="w-12 h-12 mx-auto rounded-xl bg-slate-900 border border-amber-500/30 object-contain">
+                <img src="lenteraLogo.png" class="w-12 h-12 mx-auto rounded-xl bg-slate-900 border border-amber-500/30 object-contain" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3076/3076753.png'">
                 <h2 class="font-serif font-bold text-amber-300 text-lg">Super Admin Portal</h2>
                 <p class="text-xs text-slate-400">Enter password to manage events</p>
             </div>
             <form onsubmit="handleAdminLogin(event)" class="space-y-3">
-                <input type="password" id="loginPassword" required placeholder="Password (haziqkacak123)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-amber-400">
-                <button type="submit" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs">Login Portal</button>
+                <input type="password" id="loginPassword" required placeholder="Enter admin password..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-amber-400">
+                <button type="submit" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs transition">Login Portal</button>
             </form>
-            <div class="text-center"><a href="index.html" class="text-[11px] text-slate-400 hover:text-white underline">&larr; Back to Guest View</a></div>
+            <div class="text-center"><a href="index.html" class="text-[11px] text-slate-400 hover:text-white underline">&larr; Back to Guest View / Landing Page</a></div>
         </div>
     </div>
 
@@ -38,7 +38,7 @@
                 </div>
             </div>
             <div class="flex space-x-2">
-                <a href="index.html" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-medium">Guest View</a>
+                <a href="index.html" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-medium">Landing Page</a>
                 <button onclick="logoutAdmin()" class="px-3 py-1.5 bg-red-900/40 text-red-400 border border-red-500/20 hover:bg-red-900/60 rounded-xl text-xs font-medium">Logout</button>
             </div>
         </header>
@@ -101,7 +101,7 @@
                         <input type="file" id="bgFilePicker" accept="image/*" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-1 text-white file:bg-amber-500 file:text-slate-950 file:border-0 file:rounded file:px-2 file:text-xs">
                     </div>
                 </div>
-                <button type="submit" class="w-full py-2.5 bg-gradient-to-r from-amber-600 to-yellow-500 text-slate-950 font-bold rounded-xl shadow-lg">Create Event</button>
+                <button type="submit" class="w-full py-2.5 bg-gradient-to-r from-amber-600 to-yellow-500 text-slate-950 font-bold rounded-xl shadow-lg hover:brightness-110 transition">Create Event</button>
             </form>
         </section>
 
@@ -112,13 +112,26 @@
         </section>
     </div>
 
-    <!-- QR Modal -->
+    <!-- QR Modal with Table Filter -->
     <div id="qrModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="glass-card max-w-xs w-full rounded-2xl p-5 text-center space-y-4 shadow-2xl relative border border-white/20">
+        <div class="glass-card max-w-xs w-full rounded-2xl p-5 text-center space-y-3 shadow-2xl relative border border-white/20 text-xs">
             <button onclick="closeQrModal()" class="absolute top-3 right-3 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             <h3 id="qrModalTitle" class="font-serif font-bold text-amber-300 text-sm">Event QR Code</h3>
-            <div id="qrcode" class="bg-white p-3 rounded-xl inline-block mx-auto flex justify-center"></div>
-            <p id="qrModalUrl" class="text-[10px] text-slate-400 break-all select-all"></p>
+            <div id="qrcode" class="bg-white p-3 rounded-xl inline-block mx-auto flex justify-center shadow-lg"></div>
+            
+            <div class="text-left space-y-1 pt-1">
+                <label class="block text-slate-300 text-[11px] font-semibold">Jana QR Khas Meja (Pilihan):</label>
+                <div class="flex space-x-1.5">
+                    <input type="text" id="qrTableInput" placeholder="Contoh: M01 atau VIP-1" class="flex-grow bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-white text-xs outline-none">
+                    <button type="button" onclick="updateQrWithTable()" class="px-3 py-1 bg-amber-500 text-slate-950 font-bold rounded-lg text-xs">Jana</button>
+                </div>
+            </div>
+
+            <p id="qrModalUrl" class="text-[10px] text-slate-400 break-all select-all font-mono bg-slate-950/70 p-2 rounded-lg border border-white/10"></p>
+            <div class="flex space-x-2 pt-1">
+                <button type="button" onclick="copyQrUrl()" class="flex-1 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-medium">Salin Link</button>
+                <button type="button" onclick="window.print()" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-lg text-xs font-bold" title="Cetak QR"><i class="fa-solid fa-print"></i></button>
+            </div>
         </div>
     </div>
 
@@ -130,6 +143,12 @@
                 <button onclick="closeStatModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div id="statModalBody" class="space-y-2"></div>
+            <div class="pt-2">
+                <button type="button" onclick="exportCurrentEventWishesCsv()" class="w-full py-2 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 text-white font-bold rounded-xl text-xs flex items-center justify-center space-x-1.5 shadow-md">
+                    <i class="fa-solid fa-file-excel"></i>
+                    <span>Export All Wishes (CSV / Excel)</span>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -144,6 +163,10 @@
             <div class="flex space-x-2 border-b border-white/10 pb-2">
                 <button onclick="switchAdminTab('details')" id="admin-tab-btn-details" class="px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold">Edit Details & Music</button>
                 <button onclick="switchAdminTab('memories')" id="admin-tab-btn-memories" class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300">View & Delete Photos</button>
+                <button onclick="exportCurrentEventWishesCsv()" class="px-3 py-1.5 rounded-lg bg-emerald-700/80 hover:bg-emerald-600 text-white font-bold ml-auto flex items-center space-x-1">
+                    <i class="fa-solid fa-download"></i>
+                    <span>Export CSV</span>
+                </button>
             </div>
 
             <div id="admin-tab-details" class="space-y-3">
@@ -178,7 +201,7 @@
                             <input type="file" id="editBgFile" accept="image/*" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-1.5 text-white file:bg-amber-500 file:text-slate-950 file:border-0 file:rounded file:px-2 file:text-xs">
                         </div>
                     </div>
-                    <button type="submit" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg">Save Changes</button>
+                    <button type="submit" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg transition">Save Changes</button>
                 </form>
             </div>
 

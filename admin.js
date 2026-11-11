@@ -5,6 +5,8 @@ const firebaseConfig = {
 let db = null;
 let eventsRef = null;
 let currentManagingEventId = null;
+let lastSelectedEventId = null;
+let lastSelectedBaseUrl = '';
 
 try {
     firebase.initializeApp(firebaseConfig);
@@ -39,7 +41,7 @@ function handleAdminLogin(e) {
         sessionStorage.setItem('lenterakita_admin_logged', 'true');
         showAdminDashboard();
     } else {
-        alert("Wrong password! (Password: haziqkacak123)");
+        alert("Wrong password! Sila semak semula kata laluan anda.");
         passInput.value = '';
     }
 }
@@ -100,7 +102,7 @@ function handleCreateEvent(e) {
         };
 
         eventsRef.child(eventId).update(eventData).then(() => {
-            alert(`Event '${eventId}' created successfully!`);
+            alert(`Event '${eventId}' berjaya didaftarkan!`);
             const form = document.getElementById('createEventForm');
             if (form) form.reset();
         });
@@ -126,16 +128,16 @@ function loadAdminEventList() {
 
         container.innerHTML = eventKeys.map(key => {
             const ev = allEvents[key].config || {};
-            const guestUrl = `${window.location.origin}/index.html?event=${key}`;
+            const guestUrl = `${window.location.origin}${window.location.pathname.replace(/admin\.html.*$/i, '')}index.html?event=${key}`;
             return `
                 <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl space-y-3">
                     <div>
                         <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">${ev.eventType || 'Event'}</span>
                         <h3 class="font-bold text-sm text-slate-100 mt-1">${escapeHtml(ev.eventTitle || key)}</h3>
-                        <p class="text-[11px] text-slate-400">${escapeHtml(ev.date || '')}</p>
+                        <p class="text-[11px] text-slate-400">${escapeHtml(ev.date || '')} ${ev.venue ? '• ' + escapeHtml(ev.venue) : ''}</p>
                     </div>
                     <div class="grid grid-cols-3 gap-1.5 pt-1">
-                        <button onclick="showQrCode('${guestUrl}', '${escapeHtml(ev.eventTitle || key)}')" class="py-1.5 bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border border-amber-500/30 rounded-lg text-xs font-medium">
+                        <button onclick="showQrCode('${guestUrl}', '${escapeHtml(ev.eventTitle || key)}', '${key}')" class="py-1.5 bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border border-amber-500/30 rounded-lg text-xs font-medium">
                             <i class="fa-solid fa-qrcode"></i> QR
                         </button>
                         <button onclick="openManageModal('${key}')" class="py-1.5 bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 border border-cyan-500/30 rounded-lg text-xs font-medium">
@@ -147,7 +149,7 @@ function loadAdminEventList() {
                     </div>
                     <div class="flex space-x-2 pt-1">
                         <a href="${guestUrl}" target="_blank" class="flex-1 py-1.5 text-center bg-slate-800 text-slate-200 hover:bg-slate-700 rounded-lg text-xs font-medium">Preview Guest View</a>
-                        <button onclick="deleteEvent('${key}')" class="px-3 py-1.5 bg-red-900/40 text-red-400 border border-red-500/20 rounded-lg text-xs"><i class="fa-solid fa-trash"></i></button>
+                        <button onclick="deleteEvent('${key}')" class="px-3 py-1.5 bg-red-900/40 text-red-400 border border-red-500/20 hover:bg-red-900/60 rounded-lg text-xs" title="Padam Acara"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
             `;
@@ -157,6 +159,7 @@ function loadAdminEventList() {
 
 function openManageModal(eventId) {
     currentManagingEventId = eventId;
+    lastSelectedEventId = eventId;
     const modal = document.getElementById('adminManageModal');
     if (!modal) return;
 
@@ -277,7 +280,7 @@ function loadAdminMemories(eventId, memoriesData) {
 }
 
 function deleteMemoryItem(eventId, memoryId) {
-    if (confirm("Are you sure you want to delete this memory item permanently?")) {
+    if (confirm("Adakah anda pasti untuk memadam item memori ini secara kekal?")) {
         eventsRef.child(eventId).child('memories').child(memoryId).remove().then(() => {
             alert("Memory deleted successfully.");
             eventsRef.child(eventId).once('value', snapshot => {
@@ -288,12 +291,17 @@ function deleteMemoryItem(eventId, memoryId) {
     }
 }
 
-function showQrCode(url, title) {
+function showQrCode(url, title, eventId) {
+    lastSelectedBaseUrl = url;
+    lastSelectedEventId = eventId;
     const qrModal = document.getElementById('qrModal');
     const qrModalTitle = document.getElementById('qrModalTitle');
     const qrModalUrl = document.getElementById('qrModalUrl');
+    const tableInput = document.getElementById('qrTableInput');
+
     if (qrModalTitle) qrModalTitle.innerText = title;
     if (qrModalUrl) qrModalUrl.innerText = url;
+    if (tableInput) tableInput.value = '';
     
     const qrContainer = document.getElementById('qrcode');
     if (qrContainer) {
@@ -303,12 +311,41 @@ function showQrCode(url, title) {
     if (qrModal) qrModal.classList.remove('hidden');
 }
 
+function updateQrWithTable() {
+    if (!lastSelectedBaseUrl) return;
+    const tableInput = document.getElementById('qrTableInput');
+    const tableVal = tableInput ? tableInput.value.trim() : '';
+    let finalUrl = lastSelectedBaseUrl;
+    if (tableVal) {
+        finalUrl += `&table=${encodeURIComponent(tableVal)}`;
+    }
+    const qrModalUrl = document.getElementById('qrModalUrl');
+    if (qrModalUrl) qrModalUrl.innerText = finalUrl;
+    const qrContainer = document.getElementById('qrcode');
+    if (qrContainer) {
+        qrContainer.innerHTML = '';
+        new QRCode(qrContainer, { text: finalUrl, width: 150, height: 150 });
+    }
+}
+
+function copyQrUrl() {
+    const qrModalUrl = document.getElementById('qrModalUrl');
+    if (!qrModalUrl || !qrModalUrl.innerText) return;
+    const text = qrModalUrl.innerText;
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => alert("Link QR berjaya disalin!"));
+    } else {
+        prompt("Salin link ini:", text);
+    }
+}
+
 function closeQrModal() {
     const qrModal = document.getElementById('qrModal');
     if (qrModal) qrModal.classList.add('hidden');
 }
 
 function showEventStats(eventId) {
+    lastSelectedEventId = eventId;
     eventsRef.child(eventId).once('value', (snapshot) => {
         const data = snapshot.val();
         if (!data || !data.memories) {
@@ -345,8 +382,47 @@ function closeStatModal() {
     if (statModal) statModal.classList.add('hidden');
 }
 
+function exportCurrentEventWishesCsv() {
+    const eventId = currentManagingEventId || lastSelectedEventId;
+    if (!eventId) return alert("Sila pilih majlis terlebih dahulu.");
+    exportWishesCsv(eventId);
+}
+
+function exportWishesCsv(eventId) {
+    if (!eventsRef) return;
+    eventsRef.child(eventId).once('value', snapshot => {
+        const data = snapshot.val();
+        if (!data || !data.memories) return alert("Tiada data ucapan untuk dieksport.");
+
+        const memories = Object.values(data.memories);
+        let csvContent = "Nama Tetamu,Meja,Masa,Ucapan,Gambar,Voice Note,Jumlah Likes\n";
+
+        memories.forEach(m => {
+            const name = `"${(m.name || '').replace(/"/g, '""')}"`;
+            const table = `"${(m.table || '').replace(/"/g, '""')}"`;
+            const dateStr = `"${(m.dateStr || '').replace(/"/g, '""')}"`;
+            const wish = `"${(m.wish || '').replace(/"/g, '""')}"`;
+            const hasMedia = (m.media && m.media.length > 0) ? `${m.media.length} Foto` : "Tiada";
+            const hasAudio = m.audio ? "Ada" : "Tiada";
+            const likes = m.likes || 0;
+
+            csvContent += `${name},${table},${dateStr},${wish},${hasMedia},${hasAudio},${likes}\n`;
+        });
+
+        const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `lenterakita-ucapan-${eventId}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+}
+
 function deleteEvent(eventId) {
-    if (confirm(`Delete event '${eventId}' permanently?`)) {
+    if (confirm(`Padam acara '${eventId}' secara kekal? Semua data memori akan hilang.`)) {
         eventsRef.child(eventId).remove().then(() => alert("Event deleted."));
     }
 }
